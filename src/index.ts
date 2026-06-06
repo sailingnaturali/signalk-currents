@@ -1,6 +1,7 @@
 import { IRouter } from 'express';
 import { Plugin, ServerAPI, Path, Position } from '@signalk/server-api';
-import { CurrentEvent, StationConfig } from './types';
+import { StationConfig } from './types';
+import { createCache, DayCache } from './cache';
 import { stationEvents } from './fetch';
 import { nearestStation, interpolateCurrent } from './calculations';
 import { currentsRouter, StationSeries } from './routes';
@@ -15,7 +16,7 @@ export = function (app: ServerAPI): Plugin {
   // Cache of per-day events keyed by `provider:station:YYYY-MM-DD`, and the
   // current per-station series exposed via /currents. Both live for the
   // lifetime of the plugin process and are read by the route handler.
-  const cache = new Map<string, CurrentEvent[]>();
+  const cache: DayCache = createCache();
   const series = new Map<string, StationSeries>();
   let timer: ReturnType<typeof setInterval> | undefined;
 
@@ -51,10 +52,16 @@ export = function (app: ServerAPI): Plugin {
         try {
           const now = new Date();
 
-          // Refresh each station's series from the cached day fetch.
+          // Refresh each station's series from the cached day fetch. Isolate
+          // per-station failures so one bad CHS/NOAA response can't blank the
+          // others (or skip the environment.current publish) for the whole cycle.
           for (const station of stations) {
-            const events = await stationEvents(station, now, horizonDays, cache);
-            series.set(station.stationId, { station, events });
+            try {
+              const events = await stationEvents(station, now, horizonDays, cache);
+              series.set(station.stationId, { station, events });
+            } catch (e) {
+              app.error(`station ${station.label} fetch failed: ${(e as Error).message}`);
+            }
           }
 
           // Read the vessel's position (mirrors signalk-tides: reads the
