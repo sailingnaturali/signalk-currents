@@ -47,8 +47,8 @@ Each entry in `stations`:
 | `noaaBin` | number | NOAA current-station bin (NOAA only). |
 | `label` | string | Human-readable name. |
 | `lat` / `lon` | number | Station position (used for nearest-station selection). |
-| `floodDir` | number | Set direction (°true) while flooding. |
-| `ebbDir` | number | Set direction (°true) while ebbing. |
+| `floodDir` | number | Set direction (°true) while flooding. **CHS: required** (from the Canadian Tide and Current Tables / Sailing Directions). **NOAA: optional** — the API's measured `meanFloodDir` overrides whatever is configured. |
+| `ebbDir` | number | Set direction (°true) while ebbing. Same sourcing rules as `floodDir` (NOAA `meanEbbDir`). |
 
 ### Example station config
 

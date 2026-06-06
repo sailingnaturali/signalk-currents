@@ -27,4 +27,10 @@ describe('interpolateCurrent', () => {
   it('returns undefined outside the event span', () => {
     expect(interpolateCurrent(new Date('2026-06-06T03:00:00Z'), events, st)).toBeUndefined();
   });
+  it('returns undefined when the needed set direction is unknown', () => {
+    // Dirs are optional (NOAA fills them from the API); without one we cannot
+    // honestly publish a setTrue, so publish nothing.
+    const noDirs: StationConfig = { ...st, floodDir: undefined, ebbDir: undefined };
+    expect(interpolateCurrent(new Date('2026-06-06T06:00:00Z'), events, noDirs)).toBeUndefined();
+  });
 });

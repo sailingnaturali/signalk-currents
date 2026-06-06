@@ -33,5 +33,6 @@ export function interpolateCurrent(
   else if (e1.kind === 'slack') { speedKn = e0.speedKn * Math.cos((Math.PI / 2) * frac); extremum = e0; }
   else { speedKn = e0.speedKn + (e1.speedKn - e0.speedKn) * frac; extremum = e0; } // rare flood↔ebb, linear
   const dir = extremum.kind === 'ebb' ? station.ebbDir : station.floodDir;
+  if (dir === undefined) return undefined; // no honest setTrue without a set direction
   return { drift: speedKn * KN_TO_MS, setTrue: (dir * Math.PI) / 180 };
 }

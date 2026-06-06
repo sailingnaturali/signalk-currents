@@ -1,7 +1,7 @@
 import { Plugin, ServerAPI, Path, Position } from '@signalk/server-api';
-import { StationConfig } from './types';
+import { StationConfig, resolveStation } from './types';
 import { createCache, DayCache } from './cache';
-import { stationEvents } from './fetch';
+import { stationData } from './fetch';
 import { nearestStation, interpolateCurrent } from './calculations';
 import { currentsPayload, StationSeries } from './routes';
 
@@ -28,13 +28,13 @@ export = function (app: ServerAPI): Plugin {
       properties: {
         stations: {
           type: 'array', title: 'Current stations',
-          items: { type: 'object', required: ['provider', 'stationId', 'label', 'lat', 'lon', 'floodDir', 'ebbDir'],
+          items: { type: 'object', required: ['provider', 'stationId', 'label', 'lat', 'lon'],
             properties: {
               provider: { type: 'string', enum: ['chs', 'noaa'] },
               stationId: { type: 'string' }, noaaBin: { type: 'number' },
               label: { type: 'string' }, lat: { type: 'number' }, lon: { type: 'number' },
-              floodDir: { type: 'number', title: 'Flood set (°true)' },
-              ebbDir: { type: 'number', title: 'Ebb set (°true)' },
+              floodDir: { type: 'number', title: 'Flood set (°true) — required for CHS; NOAA stations use the API\'s measured meanFloodDir' },
+              ebbDir: { type: 'number', title: 'Ebb set (°true) — required for CHS; NOAA stations use the API\'s measured meanEbbDir' },
             } },
         },
         horizonDays: { type: 'number', default: 3 },
@@ -72,8 +72,9 @@ export = function (app: ServerAPI): Plugin {
           // others (or skip the environment.current publish) for the whole cycle.
           for (const station of stations) {
             try {
-              const events = await stationEvents(station, now, horizonDays, cache);
-              series.set(station.stationId, { station, events });
+              const data = await stationData(station, now, horizonDays, cache);
+              // Provider-measured set directions (NOAA) beat the config values.
+              series.set(station.stationId, { station: resolveStation(station, data), events: data.events });
             } catch (e) {
               app.error(`station ${station.label} fetch failed: ${(e as Error).message}`);
             }
@@ -95,7 +96,8 @@ export = function (app: ServerAPI): Plugin {
             return;
           }
 
-          const current = interpolateCurrent(now, entry.events, station);
+          // entry.station carries the resolved dirs; `station` is raw config.
+          const current = interpolateCurrent(now, entry.events, entry.station);
           if (!current) {
             app.setPluginStatus(`No current data bracketing now for ${station.label}`);
             return;

@@ -13,8 +13,23 @@ export interface StationConfig {
   label: string;
   lat: number;
   lon: number;
-  floodDir: number;  // °true, set when flooding
-  ebbDir: number;    // °true, set when ebbing
+  floodDir?: number; // °true, set when flooding (CHS: from config; NOAA: API overrides)
+  ebbDir?: number;   // °true, set when ebbing
+}
+
+export interface StationDirs {
+  floodDir?: number;
+  ebbDir?: number;
+}
+
+// Measured dirs from the provider (NOAA meanFloodDir/meanEbbDir) beat whatever
+// was typed into config; config is the fallback (and the only source for CHS).
+export function resolveStation(station: StationConfig, fetched: StationDirs): StationConfig {
+  return {
+    ...station,
+    floodDir: fetched.floodDir ?? station.floodDir,
+    ebbDir: fetched.ebbDir ?? station.ebbDir,
+  };
 }
 
 export function eventFromParts(utc: string, kind: CurrentKind, speed: number): CurrentEvent {
