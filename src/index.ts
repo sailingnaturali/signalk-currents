@@ -1,6 +1,24 @@
-import { Plugin, ServerAPI } from '@signalk/server-api';
+import { IRouter } from 'express';
+import { Plugin, ServerAPI, Path, Position } from '@signalk/server-api';
+import { CurrentEvent, StationConfig } from './types';
+import { stationEvents } from './fetch';
+import { nearestStation, interpolateCurrent } from './calculations';
+import { currentsRouter, StationSeries } from './routes';
+
+interface Options {
+  stations?: StationConfig[];
+  horizonDays?: number;
+  pollMinutes?: number;
+}
 
 export = function (app: ServerAPI): Plugin {
+  // Cache of per-day events keyed by `provider:station:YYYY-MM-DD`, and the
+  // current per-station series exposed via /currents. Both live for the
+  // lifetime of the plugin process and are read by the route handler.
+  const cache = new Map<string, CurrentEvent[]>();
+  const series = new Map<string, StationSeries>();
+  let timer: ReturnType<typeof setInterval> | undefined;
+
   const plugin: Plugin = {
     id: 'signalk-currents',
     name: 'Tidal currents (CHS/NOAA)',
@@ -23,8 +41,88 @@ export = function (app: ServerAPI): Plugin {
         pollMinutes: { type: 'number', default: 60 },
       },
     },
-    start: () => {},
-    stop: () => {},
+
+    start(options: Options) {
+      const stations = options.stations ?? [];
+      const horizonDays = options.horizonDays ?? 3;
+      const pollMinutes = options.pollMinutes ?? 60;
+
+      async function refresh() {
+        try {
+          const now = new Date();
+
+          // Refresh each station's series from the cached day fetch.
+          for (const station of stations) {
+            const events = await stationEvents(station, now, horizonDays, cache);
+            series.set(station.stationId, { station, events });
+          }
+
+          // Read the vessel's position (mirrors signalk-tides: reads the
+          // `.value` of navigation.position via getSelfPath).
+          const position = app.getSelfPath('navigation.position.value') as Position | undefined;
+          if (!position) {
+            app.debug('No position available; skipping environment.current publish');
+            app.setPluginStatus(`Fetched ${series.size} station(s); awaiting position`);
+            return;
+          }
+
+          const station = nearestStation(position.latitude, position.longitude, stations);
+          const entry = station ? series.get(station.stationId) : undefined;
+          if (!station || !entry) {
+            app.setPluginStatus('No station near vessel position');
+            return;
+          }
+
+          const current = interpolateCurrent(now, entry.events, station);
+          if (!current) {
+            app.setPluginStatus(`No current data bracketing now for ${station.label}`);
+            return;
+          }
+
+          // Publish environment.current as a SignalK delta. handleMessage takes
+          // a Partial<Delta>; the path is a branded type so it is cast.
+          app.handleMessage(plugin.id, {
+            updates: [
+              {
+                values: [
+                  {
+                    path: 'environment.current' as Path,
+                    value: { drift: current.drift, setTrue: current.setTrue },
+                  },
+                ],
+              },
+            ],
+          });
+          app.setPluginStatus(
+            `environment.current from ${station.label}: ${current.drift.toFixed(2)} m/s`,
+          );
+        } catch (e) {
+          // One bad cycle must never kill the loop.
+          app.error(`refresh failed: ${(e as Error).message}`);
+          app.setPluginError((e as Error).message);
+        }
+      }
+
+      // Initial fetch, then poll. Errors are swallowed inside refresh().
+      refresh();
+      timer = setInterval(refresh, pollMinutes * 60_000);
+    },
+
+    stop() {
+      if (timer) {
+        clearInterval(timer);
+        timer = undefined;
+      }
+    },
+
+    // Mounted by the server at /plugins/signalk-currents — so the resource is
+    // served at /plugins/signalk-currents/currents. This is the typed
+    // equivalent of the express-router mounting signalk-tides does via an
+    // app.use() cast; registerWithRouter is the supported Plugin API.
+    registerWithRouter(router: IRouter) {
+      router.use('/', currentsRouter(() => series));
+    },
   };
+
   return plugin;
 };
