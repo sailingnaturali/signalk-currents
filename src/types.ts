@@ -15,6 +15,10 @@ export interface StationConfig {
   lon: number;
   floodDir?: number; // °true, set when flooding (CHS: from config; NOAA: API overrides)
   ebbDir?: number;   // °true, set when ebbing
+  // True when the config value is an assumption (e.g. reciprocal of a stated
+  // flood) rather than a documented direction. Consumers should say so.
+  floodDirEstimated?: boolean;
+  ebbDirEstimated?: boolean;
 }
 
 export interface StationDirs {
@@ -30,6 +34,16 @@ export function resolveStation(station: StationConfig, fetched: StationDirs): St
     floodDir: fetched.floodDir ?? station.floodDir,
     ebbDir: fetched.ebbDir ?? station.ebbDir,
   };
+}
+
+export type DirsSource = 'api' | 'config';
+
+// Where the resolved directions came from: provider-measured ('api'), config
+// ('config'), or undefined when neither knows.
+export function dirsSource(station: StationConfig, fetched: StationDirs): DirsSource | undefined {
+  if (fetched.floodDir !== undefined || fetched.ebbDir !== undefined) return 'api';
+  if (station.floodDir !== undefined || station.ebbDir !== undefined) return 'config';
+  return undefined;
 }
 
 export function eventFromParts(utc: string, kind: CurrentKind, speed: number): CurrentEvent {

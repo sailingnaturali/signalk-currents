@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { eventFromParts, resolveStation, CurrentEvent, StationConfig } from '../src/types';
+import { dirsSource, eventFromParts, resolveStation, CurrentEvent, StationConfig } from '../src/types';
 
 describe('CurrentEvent', () => {
   it('normalizes a slack event', () => {
@@ -26,5 +26,23 @@ describe('resolveStation', () => {
   it('falls back to config when the fetch supplied none', () => {
     const r = resolveStation(st, {});
     expect([r.floodDir, r.ebbDir]).toEqual([110, 290]);
+  });
+});
+
+describe('dirsSource', () => {
+  const st: StationConfig = { provider: 'noaa', stationId: 'x', label: 'X',
+    lat: 0, lon: 0, floodDir: 110, ebbDir: 290 };
+
+  it("is 'api' when the provider measured the dirs", () => {
+    expect(dirsSource(st, { floodDir: 3, ebbDir: 236 })).toBe('api');
+  });
+
+  it("is 'config' when only config supplies them", () => {
+    expect(dirsSource(st, {})).toBe('config');
+  });
+
+  it('is undefined when nobody knows', () => {
+    const bare: StationConfig = { ...st, floodDir: undefined, ebbDir: undefined };
+    expect(dirsSource(bare, {})).toBeUndefined();
   });
 });

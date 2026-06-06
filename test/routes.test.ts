@@ -16,4 +16,22 @@ describe('currentsPayload', () => {
     const p = currentsPayload(new Map([[st.stationId, { station: st, events: ev }]]));
     expect(p.stations[0]).toMatchObject({ floodDir: 160, ebbDir: 340 });
   });
+
+  it('states where the dirs came from (api vs config)', () => {
+    const p = currentsPayload(new Map([[st.stationId, { station: st, events: ev, dirsSource: 'config' }]]));
+    expect(p.stations[0].dirsSource).toBe('config');
+  });
+
+  it('passes per-direction estimated flags through for config dirs', () => {
+    const flagged: StationConfig = { ...st, ebbDirEstimated: true };
+    const p = currentsPayload(new Map([[st.stationId, { station: flagged, events: ev, dirsSource: 'config' }]]));
+    expect(p.stations[0].ebbDirEstimated).toBe(true);
+    expect(p.stations[0].floodDirEstimated).toBeUndefined();
+  });
+
+  it('omits estimated flags when dirs are API-measured', () => {
+    const flagged: StationConfig = { ...st, ebbDirEstimated: true };
+    const p = currentsPayload(new Map([[st.stationId, { station: flagged, events: ev, dirsSource: 'api' }]]));
+    expect(p.stations[0].ebbDirEstimated).toBeUndefined();
+  });
 });

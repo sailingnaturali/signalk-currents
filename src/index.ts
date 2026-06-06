@@ -1,5 +1,5 @@
 import { Plugin, ServerAPI, Path, Position } from '@signalk/server-api';
-import { StationConfig, resolveStation } from './types';
+import { StationConfig, dirsSource, resolveStation } from './types';
 import { createCache, DayCache } from './cache';
 import { stationData } from './fetch';
 import { nearestStation, interpolateCurrent } from './calculations';
@@ -35,6 +35,8 @@ export = function (app: ServerAPI): Plugin {
               label: { type: 'string' }, lat: { type: 'number' }, lon: { type: 'number' },
               floodDir: { type: 'number', title: 'Flood set (°true) — required for CHS; NOAA stations use the API\'s measured meanFloodDir' },
               ebbDir: { type: 'number', title: 'Ebb set (°true) — required for CHS; NOAA stations use the API\'s measured meanEbbDir' },
+              floodDirEstimated: { type: 'boolean', title: 'Flood set is an assumption (not from the tables)' },
+              ebbDirEstimated: { type: 'boolean', title: 'Ebb set is an assumption (e.g. reciprocal of flood)' },
             } },
         },
         horizonDays: { type: 'number', default: 3 },
@@ -74,7 +76,11 @@ export = function (app: ServerAPI): Plugin {
             try {
               const data = await stationData(station, now, horizonDays, cache);
               // Provider-measured set directions (NOAA) beat the config values.
-              series.set(station.stationId, { station: resolveStation(station, data), events: data.events });
+              series.set(station.stationId, {
+                station: resolveStation(station, data),
+                events: data.events,
+                dirsSource: dirsSource(station, data),
+              });
             } catch (e) {
               app.error(`station ${station.label} fetch failed: ${(e as Error).message}`);
             }

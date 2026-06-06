@@ -112,6 +112,7 @@ Served at `/signalk/v2/api/resources/currents` (anonymously readable under
       "lon": -125.1567,
       "floodDir": 160,
       "ebbDir": 340,
+      "dirsSource": "config",
       "events": [
         { "utc": "2026-06-06T04:14:00.000Z", "kind": "slack", "speedKn": 0 },
         { "utc": "2026-06-06T05:40:00.000Z", "kind": "flood", "speedKn": 4.1 }
@@ -122,8 +123,11 @@ Served at `/signalk/v2/api/resources/currents` (anonymously readable under
 ```
 
 `kind` is `slack` | `flood` | `ebb`; `speedKn` is the event speed magnitude in knots.
-`floodDir` / `ebbDir` are the station's set directions in °true, straight from the
-station config — so consumers can say which way the water flows, not just when it turns.
+`floodDir` / `ebbDir` are the station's set directions in °true — so consumers can say
+which way the water flows, not just when it turns. `dirsSource` says where they came
+from: `"api"` (NOAA-measured) or `"config"`; absent means nobody knows. Config-sourced
+directions may also carry `floodDirEstimated` / `ebbDirEstimated: true` when the config
+value is an assumption (e.g. the reciprocal of a stated flood) — consumers should say so.
 
 ## Development
 
