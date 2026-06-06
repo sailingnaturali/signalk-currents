@@ -1,10 +1,9 @@
-import type { IRouter } from 'express';
 import { Plugin, ServerAPI, Path, Position } from '@signalk/server-api';
 import { StationConfig } from './types';
 import { createCache, DayCache } from './cache';
 import { stationEvents } from './fetch';
 import { nearestStation, interpolateCurrent } from './calculations';
-import { registerCurrentsRoute, StationSeries } from './routes';
+import { currentsPayload, StationSeries } from './routes';
 
 interface Options {
   stations?: StationConfig[];
@@ -47,6 +46,22 @@ export = function (app: ServerAPI): Plugin {
       const stations = options.stations ?? [];
       const horizonDays = options.horizonDays ?? 3;
       const pollMinutes = options.pollMinutes ?? 60;
+
+      // Expose the per-station series as a SignalK resource — served at
+      // /signalk/v2/api/resources/currents, anonymously readable under
+      // allow_readonly like the rest of the data API. (A registerWithRouter
+      // /plugins/<id> route is gated behind admin auth — wrong mechanism here.)
+      app.registerResourceProvider({
+        type: 'currents',
+        methods: {
+          async listResources() {
+            return currentsPayload(series) as unknown as Record<string, unknown>;
+          },
+          getResource(): never { throw new Error('Not implemented'); },
+          setResource(): never { throw new Error('Not implemented'); },
+          deleteResource(): never { throw new Error('Not implemented'); },
+        },
+      });
 
       async function refresh() {
         try {
@@ -120,14 +135,6 @@ export = function (app: ServerAPI): Plugin {
         clearInterval(timer);
         timer = undefined;
       }
-    },
-
-    // Mounted by the server at /plugins/signalk-currents — so the resource is
-    // served at /plugins/signalk-currents/currents. This is the typed
-    // equivalent of the express-router mounting signalk-tides does via an
-    // app.use() cast; registerWithRouter is the supported Plugin API.
-    registerWithRouter(router: IRouter) {
-      registerCurrentsRoute(router, () => series);
     },
   };
 
