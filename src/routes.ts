@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import type { IRouter, Request, Response } from 'express';
 import { StationConfig, CurrentEvent } from './types';
 
 export interface StationSeries { station: StationConfig; events: CurrentEvent[]; }
@@ -12,9 +12,12 @@ export function currentsPayload(series: Map<string, StationSeries>) {
   };
 }
 
-// Mirror signalk-tides/src/routes.ts for how the router is registered with `app`.
-export function currentsRouter(getSeries: () => Map<string, StationSeries>): Router {
-  const r = Router();
-  r.get('/currents', (_req, res) => res.json(currentsPayload(getSeries())));
-  return r;
+// Register /currents on the router SignalK hands the plugin via
+// registerWithRouter — no own express instance needed, so express stays a
+// dev-only types dependency and isn't a runtime dep. (`import type` is erased.)
+export function registerCurrentsRoute(
+  router: IRouter, getSeries: () => Map<string, StationSeries>,
+): void {
+  router.get('/currents', (_req: Request, res: Response) =>
+    res.json(currentsPayload(getSeries())));
 }

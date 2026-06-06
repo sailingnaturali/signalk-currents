@@ -1,10 +1,10 @@
-import { IRouter } from 'express';
+import type { IRouter } from 'express';
 import { Plugin, ServerAPI, Path, Position } from '@signalk/server-api';
 import { StationConfig } from './types';
 import { createCache, DayCache } from './cache';
 import { stationEvents } from './fetch';
 import { nearestStation, interpolateCurrent } from './calculations';
-import { currentsRouter, StationSeries } from './routes';
+import { registerCurrentsRoute, StationSeries } from './routes';
 
 interface Options {
   stations?: StationConfig[];
@@ -127,7 +127,7 @@ export = function (app: ServerAPI): Plugin {
     // equivalent of the express-router mounting signalk-tides does via an
     // app.use() cast; registerWithRouter is the supported Plugin API.
     registerWithRouter(router: IRouter) {
-      router.use('/', currentsRouter(() => series));
+      registerCurrentsRoute(router, () => series);
     },
   };
 
