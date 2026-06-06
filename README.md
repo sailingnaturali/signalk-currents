@@ -1,4 +1,4 @@
-# signalk-currents
+# @sailingnaturali/signalk-currents
 
 A generic [SignalK](https://signalk.org/) server plugin that fetches tidal-current
 predictions from the **CHS** (Canadian Hydrographic Service) and **NOAA** tides &
