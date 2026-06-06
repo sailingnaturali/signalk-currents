@@ -1,0 +1,24 @@
+{
+  "name": "signalk-currents",
+  "version": "0.1.0",
+  "description": "Publish CHS/NOAA tidal-current predictions to SignalK — environment.current + a /currents resource, for a configured station list.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "prepare": "npm run build"
+  },
+  "keywords": ["signalk-node-server-plugin", "signalk-category-utility", "tidal-currents", "marine"],
+  "author": "Bryan Clark",
+  "license": "MIT",
+  "dependencies": {
+    "@signalk/server-api": "^2.0.0",
+    "express": "^4.19.0",
+    "geolib": "^3.3.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0",
+    "@types/express": "^4.17.0"
+  }
+}
