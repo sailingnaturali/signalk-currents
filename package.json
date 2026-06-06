@@ -8,9 +8,21 @@
     "test": "vitest run",
     "prepare": "npm run build"
   },
-  "keywords": ["signalk-node-server-plugin", "signalk-category-utility", "tidal-currents", "marine"],
+  "keywords": ["signalk-node-server-plugin", "signalk-category-utility", "tidal-currents", "currents", "marine"],
   "author": "Bryan Clark",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sailingnaturali/signalk-currents.git"
+  },
+  "homepage": "https://github.com/sailingnaturali/signalk-currents#readme",
+  "bugs": {
+    "url": "https://github.com/sailingnaturali/signalk-currents/issues"
+  },
+  "files": ["dist"],
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@signalk/server-api": "^2.0.0",
     "express": "^4.19.0",
