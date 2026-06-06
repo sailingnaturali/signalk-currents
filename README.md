@@ -99,7 +99,8 @@ ebb — fill them from a current atlas or pilot book for your stations.
 
 ### `/currents` resource
 
-Mounted at `/plugins/signalk-currents/currents`:
+Served at `/signalk/v2/api/resources/currents` (anonymously readable under
+`allow_readonly`):
 
 ```json
 {
@@ -109,6 +110,8 @@ Mounted at `/plugins/signalk-currents/currents`:
       "label": "Gillard Passage",
       "lat": 50.3933,
       "lon": -125.1567,
+      "floodDir": 160,
+      "ebbDir": 340,
       "events": [
         { "utc": "2026-06-06T04:14:00.000Z", "kind": "slack", "speedKn": 0 },
         { "utc": "2026-06-06T05:40:00.000Z", "kind": "flood", "speedKn": 4.1 }
@@ -119,6 +122,8 @@ Mounted at `/plugins/signalk-currents/currents`:
 ```
 
 `kind` is `slack` | `flood` | `ebb`; `speedKn` is the event speed magnitude in knots.
+`floodDir` / `ebbDir` are the station's set directions in °true, straight from the
+station config — so consumers can say which way the water flows, not just when it turns.
 
 ## Development
 

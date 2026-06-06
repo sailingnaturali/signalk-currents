@@ -8,7 +8,9 @@ export function currentsPayload(series: Map<string, StationSeries>) {
   return {
     stations: [...series.values()].map(s => ({
       stationId: s.station.stationId, label: s.station.label,
-      lat: s.station.lat, lon: s.station.lon, events: s.events,
+      lat: s.station.lat, lon: s.station.lon,
+      floodDir: s.station.floodDir, ebbDir: s.station.ebbDir,
+      events: s.events,
     })),
   };
 }

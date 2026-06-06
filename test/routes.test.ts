@@ -11,4 +11,9 @@ describe('currentsPayload', () => {
     expect(p.stations[0]).toMatchObject({ stationId: 'a', label: 'Gillard', lat: 50.39, lon: -125.15 });
     expect(p.stations[0].events).toEqual(ev);
   });
+
+  it('carries flood/ebb set so consumers can speak direction', () => {
+    const p = currentsPayload(new Map([[st.stationId, { station: st, events: ev }]]));
+    expect(p.stations[0]).toMatchObject({ floodDir: 160, ebbDir: 340 });
+  });
 });
