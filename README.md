@@ -53,7 +53,7 @@ Each entry in `stations`:
 ### Example station config
 
 Gillard Passage (CHS) and Boundary Pass (NOAA), drawn from our
-[`tide-mcp`](https://github.com/sailingnaturali) passage database:
+[`currents-mcp`](https://github.com/sailingnaturali/currents-mcp) passage database:
 
 ```json
 {
