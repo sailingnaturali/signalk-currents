@@ -19,7 +19,13 @@
   "bugs": {
     "url": "https://github.com/sailingnaturali/signalk-currents/issues"
   },
-  "files": ["dist"],
+  "signalk": {
+    "displayName": "Currents",
+    "screenshots": [
+      "./docs/screenshots/data-table.png"
+    ]
+  },
+  "files": ["dist", "docs/screenshots/"],
   "publishConfig": {
     "access": "public"
   },
