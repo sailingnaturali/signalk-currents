@@ -12,7 +12,10 @@ export async function fetchChsEvents(
   const params = new URLSearchParams({
     'time-series-code': 'wcp1-events', from: isoZ(start), to: isoZ(end),
   });
-  const resp = await fetchFn(`${CHS_BASE}/stations/${stationId}/data?${params}`);
+  // Encode the station id: it comes from admin config, but keeping it to a
+  // single path segment means a stray '/', '?' or '..' can never reshape the
+  // request into a different CHS endpoint or host.
+  const resp = await fetchFn(`${CHS_BASE}/stations/${encodeURIComponent(stationId)}/data?${params}`);
   if (!resp.ok) throw new Error(`CHS ${resp.status}`);
   const out: CurrentEvent[] = [];
   for (const row of await resp.json()) {

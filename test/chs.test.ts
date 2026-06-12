@@ -14,4 +14,15 @@ describe('fetchChsEvents', () => {
       new Date('2026-06-07T00:00:00Z'), fakeFetch);
     expect(ev.map(e => [e.kind, e.speedKn])).toEqual([['slack', 0], ['flood', 4.1]]);
   });
+
+  it('URL-encodes the station id so it cannot reshape the request path', async () => {
+    let calledUrl = '';
+    const fakeFetch = async (u: string) => {
+      calledUrl = u;
+      return { ok: true, json: async () => [] } as any;
+    };
+    await fetchChsEvents('../evil?x=', new Date('2026-06-06T00:00:00Z'),
+      new Date('2026-06-07T00:00:00Z'), fakeFetch);
+    expect(calledUrl).toContain('/stations/..%2Fevil%3Fx%3D/data');
+  });
 });
