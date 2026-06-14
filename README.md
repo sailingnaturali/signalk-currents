@@ -23,10 +23,14 @@ On start, and then every `pollMinutes`, the plugin:
    delta.
 3. Keeps the per-station event series available at `/currents`.
 
+Set directions come from the provider: CHS publishes `floodDirection`/`ebbDirection`
+in station metadata, NOAA reports measured `meanFloodDir`/`meanEbbDir` — the plugin
+fetches them at poll time so `setTrue` is authoritative, not hand-entered.
+
 Interpolation is a quarter-sine model between each slack (speed 0) and the adjacent
 flood/ebb maximum: ramping up uses `Vmax·sin(π/2·frac)`, ramping down uses
-`Vmax·cos(π/2·frac)`. `setTrue` is the extremum's configured direction (`floodDir`
-when flooding, `ebbDir` when ebbing).
+`Vmax·cos(π/2·frac)`. `setTrue` is the extremum's set direction (the flood set when
+flooding, the ebb set when ebbing).
 
 ## Configuration
 
@@ -44,10 +48,9 @@ Narrows, Beazley Passage, Hole in the Wall, Gillard Passage, Dent and Arran
 Rapids, and Boundary Pass), so `/currents` is populated without any configuration.
 Station IDs mirror the [`currents-mcp`](https://github.com/sailingnaturali/currents-mcp)
 passage database, so every gate that MCP knows resolves here. Edit or replace the
-list for your own cruising ground. Set directions (`floodDir`/`ebbDir`) ship only
-where documented — Gillard from the Current Atlas, Boundary Pass measured by NOAA;
-the other CHS gates publish slack windows and speeds but withhold `setTrue` until a
-direction is sourced (rather than guessed).
+list for your own cruising ground. Set directions aren't baked into the defaults —
+both providers publish them (CHS in station metadata, NOAA inline), so every gate
+gets an authoritative `setTrue` fetched at runtime.
 
 Each entry in `stations`:
 
@@ -58,8 +61,8 @@ Each entry in `stations`:
 | `noaaBin` | number | NOAA current-station bin (NOAA only). |
 | `label` | string | Human-readable name. |
 | `lat` / `lon` | number | Station position (used for nearest-station selection). |
-| `floodDir` | number | Set direction (°true) while flooding. **CHS: required** (from the Canadian Tide and Current Tables / Sailing Directions). **NOAA: optional** — the API's measured `meanFloodDir` overrides whatever is configured. |
-| `ebbDir` | number | Set direction (°true) while ebbing. Same sourcing rules as `floodDir` (NOAA `meanEbbDir`). |
+| `floodDir` | number | **Optional override** for the flood set (°true). Both providers publish this authoritatively — CHS as `floodDirection` in station metadata, NOAA as the measured `meanFloodDir` — and the fetched value wins. Configure it only for a station the provider doesn't cover. |
+| `ebbDir` | number | Optional override for the ebb set (°true). Same sourcing as `floodDir` (CHS `ebbDirection`, NOAA `meanEbbDir`). |
 
 ### Example station config
 
@@ -121,9 +124,9 @@ Served at `/signalk/v2/api/resources/currents` (anonymously readable under
       "label": "Gillard Passage",
       "lat": 50.3933,
       "lon": -125.1567,
-      "floodDir": 160,
-      "ebbDir": 340,
-      "dirsSource": "config",
+      "floodDir": 95,
+      "ebbDir": 275,
+      "dirsSource": "api",
       "events": [
         { "utc": "2026-06-06T04:14:00.000Z", "kind": "slack", "speedKn": 0 },
         { "utc": "2026-06-06T05:40:00.000Z", "kind": "flood", "speedKn": 4.1 }
@@ -136,7 +139,8 @@ Served at `/signalk/v2/api/resources/currents` (anonymously readable under
 `kind` is `slack` | `flood` | `ebb`; `speedKn` is the event speed magnitude in knots.
 `floodDir` / `ebbDir` are the station's set directions in °true — so consumers can say
 which way the water flows, not just when it turns. `dirsSource` says where they came
-from: `"api"` (NOAA-measured) or `"config"`; absent means nobody knows. Config-sourced
+from: `"api"` (provider-published — CHS station metadata or NOAA-measured) or
+`"config"`; absent means nobody knows. Config-sourced
 directions may also carry `floodDirEstimated` / `ebbDirEstimated: true` when the config
 value is an assumption (e.g. the reciprocal of a stated flood) — consumers should say so.
 

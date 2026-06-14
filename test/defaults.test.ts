@@ -27,12 +27,13 @@ describe('DEFAULT_STATIONS', () => {
     }
   });
 
-  it('only includes set directions where documented (never half a pair)', () => {
-    // A station either has both flood and ebb directions or neither — we never
-    // ship a guessed half. CHS gates without an atlas direction publish timing
-    // and speed but withhold setTrue.
+  it('carries no hardcoded set directions (providers supply them at runtime)', () => {
+    // Both providers publish authoritative set directions — NOAA inline,
+    // CHS in station metadata — so defaults never bake in a flood/ebb value
+    // (which could go stale or, worse, be wrong). dirsSource stays 'api'.
     for (const s of DEFAULT_STATIONS) {
-      expect(s.floodDir === undefined).toBe(s.ebbDir === undefined);
+      expect(s.floodDir).toBeUndefined();
+      expect(s.ebbDir).toBeUndefined();
     }
   });
 });
