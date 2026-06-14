@@ -34,9 +34,20 @@ Configured from the SignalK server plugin UI.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `stations` | array | `[]` | Current stations (see below). |
+| `stations` | array | 11 Salish Sea / Desolation Sound gates (see below) | Current stations. |
 | `horizonDays` | number | `3` | How many UTC days of predictions to fetch/keep. |
 | `pollMinutes` | number | `60` | How often to refresh and republish. |
+
+**Default stations.** Out of the box the plugin ships the Salish Sea / Desolation
+Sound tidal gates (Dodd Narrows, Active/Porlier/Gabriola Passages, Seymour
+Narrows, Beazley Passage, Hole in the Wall, Gillard Passage, Dent and Arran
+Rapids, and Boundary Pass), so `/currents` is populated without any configuration.
+Station IDs mirror the [`currents-mcp`](https://github.com/sailingnaturali/currents-mcp)
+passage database, so every gate that MCP knows resolves here. Edit or replace the
+list for your own cruising ground. Set directions (`floodDir`/`ebbDir`) ship only
+where documented — Gillard from the Current Atlas, Boundary Pass measured by NOAA;
+the other CHS gates publish slack windows and speeds but withhold `setTrue` until a
+direction is sourced (rather than guessed).
 
 Each entry in `stations`:
 

@@ -1,5 +1,6 @@
 import { Plugin, ServerAPI, Path, Position } from '@signalk/server-api';
 import { StationConfig, dirsSource, resolveStation } from './types';
+import { DEFAULT_STATIONS } from './defaults';
 import { createCache, DayCache } from './cache';
 import { stationData } from './fetch';
 import { nearestStation, interpolateCurrent } from './calculations';
@@ -28,6 +29,7 @@ export = function (app: ServerAPI): Plugin {
       properties: {
         stations: {
           type: 'array', title: 'Current stations',
+          default: DEFAULT_STATIONS,
           items: { type: 'object', required: ['provider', 'stationId', 'label', 'lat', 'lon'],
             properties: {
               provider: { type: 'string', enum: ['chs', 'noaa'] },
@@ -45,7 +47,7 @@ export = function (app: ServerAPI): Plugin {
     },
 
     start(options: Options) {
-      const stations = options.stations ?? [];
+      const stations = options.stations ?? DEFAULT_STATIONS;
       const horizonDays = options.horizonDays ?? 3;
       const pollMinutes = options.pollMinutes ?? 60;
 
