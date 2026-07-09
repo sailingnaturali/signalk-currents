@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { createTidePredictor } from '@neaps/tide-predictor';
-import { CurrentEvent, eventFromParts } from '../types';
+import { CurrentEvent, eventFromParts, StationDirs } from '../types';
 
 export interface HarmonicConstituentEntry { name: string; amplitudeKn: number; phaseDeg: number; }
 export interface HarmonicStation { bin: number; floodDir: number; ebbDir: number; constituents: HarmonicConstituentEntry[]; }
@@ -51,4 +51,14 @@ export function synthesizeEvents(hs: HarmonicStation, start: Date, end: Date): C
 
   events.sort((x, y) => x.utc.localeCompare(y.utc));
   return events;
+}
+
+export interface HarmonicDayData extends StationDirs { events: CurrentEvent[]; }
+
+// Synthesize the whole horizon in one pass, aligned to UTC-day boundaries so the
+// event window matches the live path (fetch.ts iterates UTC days from the same start).
+export function synthesizeHorizon(hs: HarmonicStation, start: Date, horizonDays: number): HarmonicDayData {
+  const base = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
+  const end = new Date(base.getTime() + horizonDays * 86400000);
+  return { events: synthesizeEvents(hs, base, end), floodDir: hs.floodDir, ebbDir: hs.ebbDir };
 }
