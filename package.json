@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "refresh:constituents": "tsx scripts/refresh-constituents.ts"
   },
   "keywords": [
     "signalk-node-server-plugin",
@@ -33,6 +34,7 @@
   },
   "files": [
     "dist",
+    "data",
     "docs/screenshots/"
   ],
   "publishConfig": {
