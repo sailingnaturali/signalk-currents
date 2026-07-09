@@ -1,9 +1,11 @@
-import { StationConfig, CurrentEvent, DirsSource } from './types';
+import { StationConfig, CurrentEvent, DirsSource, CurrentSource } from './types';
 
 export interface StationSeries {
   station: StationConfig;
   events: CurrentEvent[];
   dirsSource?: DirsSource;
+  source: CurrentSource;
+  live: boolean;
 }
 
 // The payload served by the `currents` resource provider (registered in
@@ -19,6 +21,9 @@ export function currentsPayload(series: Map<string, StationSeries>) {
       // the config entry the flags were describing.
       floodDirEstimated: s.dirsSource === 'config' ? s.station.floodDirEstimated : undefined,
       ebbDirEstimated: s.dirsSource === 'config' ? s.station.ebbDirEstimated : undefined,
+      source: s.source,
+      live: s.live,
+      unreliableForTransit: s.station.requiresLive === true && !s.live,
       events: s.events,
     })),
   };

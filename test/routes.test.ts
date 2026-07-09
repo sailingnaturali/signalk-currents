@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { currentsPayload } from '../src/routes';
+import { currentsPayload, StationSeries } from '../src/routes';
 import { StationConfig, CurrentEvent } from '../src/types';
 
 const st: StationConfig = { provider: 'chs', stationId: 'a', label: 'Gillard', lat: 50.39, lon: -125.15, floodDir: 160, ebbDir: 340 };
@@ -33,5 +33,36 @@ describe('currentsPayload', () => {
     const flagged: StationConfig = { ...st, ebbDirEstimated: true };
     const p = currentsPayload(new Map([[st.stationId, { station: flagged, events: ev, dirsSource: 'api' }]]));
     expect(p.stations[0].ebbDirEstimated).toBeUndefined();
+  });
+});
+
+describe('provenance in /currents payload', () => {
+  const base = (over: Partial<StationSeries>): StationSeries => ({
+    station: { provider: 'noaa', stationId: 'PUG1701', label: 'Deception Pass', lat: 48.4, lon: -122.6 },
+    events: [], dirsSource: 'api', source: 'noaa', live: true, ...over,
+  });
+
+  it('labels live NOAA data source/live and not unreliable', () => {
+    const p: any = currentsPayload(new Map([['a', base({})]]));
+    expect(p.stations[0].source).toBe('noaa');
+    expect(p.stations[0].live).toBe(true);
+    expect(p.stations[0].unreliableForTransit).toBe(false);
+  });
+
+  it('flags a requiresLive station served harmonic-only', () => {
+    const s = base({
+      station: { provider: 'chs', stationId: 'X', label: 'Seymour Narrows', lat: 50, lon: -125, requiresLive: true },
+      source: 'harmonic', live: false,
+    });
+    const p: any = currentsPayload(new Map([['a', s]]));
+    expect(p.stations[0].source).toBe('harmonic');
+    expect(p.stations[0].live).toBe(false);
+    expect(p.stations[0].unreliableForTransit).toBe(true);
+  });
+
+  it('does not flag a non-requiresLive station served harmonic-only', () => {
+    const s = base({ source: 'harmonic', live: false });
+    const p: any = currentsPayload(new Map([['a', s]]));
+    expect(p.stations[0].unreliableForTransit).toBe(false);
   });
 });
