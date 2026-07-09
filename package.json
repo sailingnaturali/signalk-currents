@@ -49,6 +49,7 @@
     "geolib": "^3.3.4"
   },
   "devDependencies": {
+    "tsx": "^4.19.0",
     "typescript": "^5.4.0",
     "vitest": "^2.0.0"
   }

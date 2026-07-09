@@ -195,7 +195,7 @@ npm run refresh:constituents
 ```
 
 This re-fetches NOAA harmonic constituents for all NOAA stations in the default gate
-list and overwrites `src/constituents.json`. Commit the result to update the bundle.
+list and overwrites `data/harmonic-constituents.json`. Commit the result to update the bundle.
 
 ## Development
 

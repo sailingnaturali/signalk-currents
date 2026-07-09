@@ -34,6 +34,8 @@ export function synthesizeEvents(hs: HarmonicStation, start: Date, end: Date): C
 
   // Flood/ebb peaks come straight from the extremes predictor.
   const extremes = predictor.getExtremesPrediction({ start, end });
+  // ponytail: assumes mean-zero constituents (no Z0/DC-offset term) — a level-curve max
+  // is a positive (flood) peak; adding a Z0 constituent would shift the baseline and could flip labels.
   const events: CurrentEvent[] = extremes.map((x) =>
     eventFromParts(x.time.toISOString(), x.high ? 'flood' : 'ebb', Math.abs(x.level)),
   );
