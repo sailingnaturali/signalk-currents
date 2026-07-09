@@ -39,6 +39,7 @@ export = function (app: ServerAPI): Plugin {
               ebbDir: { type: 'number', title: 'Ebb set (°true) — required for CHS; NOAA stations use the API\'s measured meanEbbDir' },
               floodDirEstimated: { type: 'boolean', title: 'Flood set is an assumption (not from the tables)' },
               ebbDirEstimated: { type: 'boolean', title: 'Ebb set is an assumption (e.g. reciprocal of flood)' },
+              requiresLive: { type: 'boolean', title: 'Strong passage — do not trust offline harmonic fallback for transit' },
             } },
         },
         horizonDays: { type: 'number', default: 3 },

@@ -1,5 +1,7 @@
 export type CurrentKind = 'slack' | 'flood' | 'ebb';
 
+export type CurrentSource = 'chs' | 'noaa' | 'harmonic';
+
 export interface CurrentEvent {
   utc: string;       // canonical ISO8601 (UTC)
   kind: CurrentKind;
@@ -19,6 +21,10 @@ export interface StationConfig {
   // flood) rather than a documented direction. Consumers should say so.
   floodDirEstimated?: boolean;
   ebbDirEstimated?: boolean;
+  // Strong passage where harmonic fallback must not be trusted for transit
+  // decisions — seeded from the currents-mcp passage list. When true and the
+  // reading is harmonic-only, consumers get unreliableForTransit: true.
+  requiresLive?: boolean;
 }
 
 export interface StationDirs {

@@ -37,3 +37,12 @@ describe('DEFAULT_STATIONS', () => {
     }
   });
 });
+
+describe('choke-point flags', () => {
+  it('marks the strong narrows requiresLive', () => {
+    const byLabel = Object.fromEntries(DEFAULT_STATIONS.map((s) => [s.label, s]));
+    for (const label of ['Seymour Narrows', 'Dent Rapids', 'Gillard Passage', 'Dodd Narrows', 'Active Pass']) {
+      expect(byLabel[label]?.requiresLive, `${label} should require live`).toBe(true);
+    }
+  });
+});
