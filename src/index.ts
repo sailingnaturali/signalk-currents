@@ -1,10 +1,14 @@
 import { Plugin, ServerAPI, Path, Position } from '@signalk/server-api';
+import { join } from 'path';
 import { StationConfig, dirsSource, resolveStation } from './types';
 import { DEFAULT_STATIONS } from './defaults';
 import { createCache, DayCache } from './cache';
-import { stationData } from './fetch';
+import { stationData, DayData } from './fetch';
 import { nearestStation, interpolateCurrent } from './calculations';
 import { currentsPayload, StationSeries } from './routes';
+import { loadHarmonicDb, harmonicStationFor, synthesizeHorizon } from './sources/harmonic';
+import { selectData } from './select';
+import { computeDiscrepancy, appendDiscrepancy } from './compare';
 
 interface Options {
   stations?: StationConfig[];
@@ -52,6 +56,10 @@ export = function (app: ServerAPI): Plugin {
       const horizonDays = options.horizonDays ?? 3;
       const pollMinutes = options.pollMinutes ?? 60;
 
+      // Load bundled harmonic constituents once; resolve discrepancy log path.
+      const harmonicDb = loadHarmonicDb();
+      const discrepancyLog = join(app.getDataDirPath(), 'signalk-currents-discrepancies.jsonl');
+
       // Expose the per-station series as a SignalK resource — served at
       // /signalk/v2/api/resources/currents, anonymously readable under
       // allow_readonly like the rest of the data API. (A registerWithRouter
@@ -76,17 +84,34 @@ export = function (app: ServerAPI): Plugin {
           // per-station failures so one bad CHS/NOAA response can't blank the
           // others (or skip the environment.current publish) for the whole cycle.
           for (const station of stations) {
+            const hs = harmonicStationFor(harmonicDb, station.stationId);
+            const harmonicData = hs ? synthesizeHorizon(hs, now, horizonDays) : undefined;
+
+            let liveData: DayData | undefined;
             try {
-              const data = await stationData(station, now, horizonDays, cache);
-              // Provider-measured set directions (NOAA) beat the config values.
-              series.set(station.stationId, {
-                station: resolveStation(station, data),
-                events: data.events,
-                dirsSource: dirsSource(station, data),
-              });
+              liveData = await stationData(station, now, horizonDays, cache);
+              // Both available → record how far the offline model drifts from truth.
+              if (harmonicData) {
+                appendDiscrepancy(
+                  discrepancyLog,
+                  computeDiscrepancy(station.stationId, station.label, liveData.events, harmonicData.events, now),
+                );
+              }
             } catch (e) {
-              app.error(`station ${station.label} fetch failed: ${(e as Error).message}`);
+              app.error(`station ${station.label} live fetch failed: ${(e as Error).message}`);
             }
+
+            const sel = selectData(liveData, harmonicData, station.provider);
+            if (!sel) continue; // no live and no bundled constituents — nothing to serve
+            if (!sel.live) app.debug(`station ${station.label}: serving harmonic fallback`);
+
+            series.set(station.stationId, {
+              station: resolveStation(station, sel.data),
+              events: sel.data.events,
+              dirsSource: dirsSource(station, sel.data),
+              source: sel.source,
+              live: sel.live,
+            });
           }
 
           // Read the vessel's position (mirrors signalk-tides: reads the
@@ -114,9 +139,21 @@ export = function (app: ServerAPI): Plugin {
 
           // Publish environment.current as a SignalK delta. handleMessage takes
           // a Partial<Delta>; the path is a branded type so it is cast.
+          // Meta carries provenance so consumers know whether to trust the reading
+          // for transit; as unknown as object bypasses the strict delta value union.
           app.handleMessage(plugin.id, {
             updates: [
               {
+                meta: [
+                  {
+                    path: 'environment.current' as Path,
+                    value: {
+                      source: entry.source,
+                      live: entry.live,
+                      unreliableForTransit: station.requiresLive === true && !entry.live,
+                    } as unknown as object,
+                  },
+                ],
                 values: [
                   {
                     path: 'environment.current' as Path,
@@ -127,7 +164,7 @@ export = function (app: ServerAPI): Plugin {
             ],
           });
           app.setPluginStatus(
-            `environment.current from ${station.label}: ${current.drift.toFixed(2)} m/s`,
+            `environment.current from ${station.label} (${entry.source}${entry.live ? '' : ', offline'}): ${current.drift.toFixed(2)} m/s`,
           );
         } catch (e) {
           // One bad cycle must never kill the loop.
