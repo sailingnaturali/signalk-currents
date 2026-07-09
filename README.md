@@ -144,6 +144,59 @@ from: `"api"` (provider-published — CHS station metadata or NOAA-measured) or
 directions may also carry `floodDirEstimated` / `ebbDirEstimated: true` when the config
 value is an assumption (e.g. the reciprocal of a stated flood) — consumers should say so.
 
+## Offline harmonic fallback
+
+When the CHS or NOAA API is unreachable, stations with bundled public-domain NOAA
+harmonic constituents fall back to offline synthesis via
+[Neaps](https://github.com/neaps/neaps), so `environment.current` and `/currents`
+keep flowing without a network connection.
+
+### Provenance fields
+
+Every reading carries two extra fields:
+
+| Field | Values | Meaning |
+|-------|--------|---------|
+| `source` | `"chs"` \| `"noaa"` \| `"harmonic"` | Where this prediction came from. |
+| `live` | `true` \| `false` | `false` when synthesized offline from constituents. |
+
+A station flagged `requiresLive: true` in config (the strong narrows — Dent, Arran,
+Seymour, Gillard, Hole in the Wall) is tagged `unreliableForTransit: true` whenever
+it is served harmonic-only. The harmonic model gives a reasonable baseline for
+planning, but constituent-derived slack timing at fast narrows can be off by tens of
+minutes. **Do not use a harmonic-only reading to time a transit of the rapids.**
+A deeper look at why harmonic predictions fall short at constricted passes will be
+written up on the engineering blog when the model has been run against live data for
+a season.
+
+### Coverage and licensing
+
+Only **NOAA US stations** have bundled constituents — Canadian/CHS data is not
+included (licensing). Offline coverage is the US-Salish passes in the default gate
+list (Boundary Pass, Admiralty Inlet, etc.); CHS gates (Dodd Narrows, Gillard, Dent,
+Seymour, Arran, Porlier, Active, Beazley, Hole in the Wall) remain API-only.
+
+### Discrepancy log
+
+While a station has live data available, the plugin compares harmonic predictions
+against the live values and appends mismatches to:
+
+```
+<SignalK dataDir>/signalk-currents-discrepancies.jsonl
+```
+
+This log is local only — nothing is phoned home. It is useful for diagnosing
+constituent accuracy over time.
+
+### Refreshing bundled constituents
+
+```bash
+npm run refresh:constituents
+```
+
+This re-fetches NOAA harmonic constituents for all NOAA stations in the default gate
+list and overwrites `src/constituents.json`. Commit the result to update the bundle.
+
 ## Development
 
 ```bash
