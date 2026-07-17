@@ -10,7 +10,20 @@ using it go at the bottom — add to that section rather than rediscovering them
 
 Base URL: `https://api-sine.dfo-mpo.gc.ca/api/v1`
 
-No auth, no key, no documented rate limit. All times are UTC (`...Z`). Public data.
+No auth, no key. All times are UTC (`...Z`). Public data.
+
+### Rate & size limits
+
+Per client IP:
+
+- **3 requests/second**, **30 requests/minute**.
+- Data span per request: **1 week** for 1-minute data, **3 weeks** for 3-minute,
+  **1 month** for lower resolutions.
+
+A **429** means you tripped one of these — back off and re-request within the limits.
+Our per-station-day fetch (one small request each, cached, well under 30/min for the
+default ~17 stations) stays clear, but a wide `horizonDays` × many stations on a cold
+cache could brush the per-minute cap.
 
 ## Endpoints we use
 
@@ -96,3 +109,6 @@ Append here; each line is a scar so we don't repeat it.
   offline coverage by design (see `scripts/refresh-constituents.ts`).
 - **Unknown qualifiers exist** in the events feed occasionally; skip anything not in
   the SLACK/EXTREMA_FLOOD/EXTREMA_EBB set rather than assuming three kinds.
+- **429 = rate limit** (3/s, 30/min per IP). `fetchChsEvents` currently just throws
+  `CHS 429` with no backoff — the day cache keeps us well under the cap, but if a cold
+  cache with a large horizon × many stations starts tripping it, add spacing/retry there.
