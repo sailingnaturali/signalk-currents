@@ -27,6 +27,10 @@ Set directions come from the provider: CHS publishes `floodDirection`/`ebbDirect
 in station metadata, NOAA reports measured `meanFloodDir`/`meanEbbDir` — the plugin
 fetches them at poll time so `setTrue` is authoritative, not hand-entered.
 
+For the CHS (IWLS) side, [`docs/chs-api.md`](docs/chs-api.md) is a practical reference
+to the endpoints, time-series codes, and response shapes we use — plus lessons learned,
+since the official docs are hard to parse.
+
 Interpolation is a quarter-sine model between each slack (speed 0) and the adjacent
 flood/ebb maximum: ramping up uses `Vmax·sin(π/2·frac)`, ramping down uses
 `Vmax·cos(π/2·frac)`. `setTrue` is the extremum's set direction (the flood set when
