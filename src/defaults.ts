@@ -21,5 +21,11 @@ export const DEFAULT_STATIONS: StationConfig[] = [
   { provider: 'chs', stationId: '5dd3064fe0fdc4b9b4be6978', label: 'Gillard Passage', lat: 50.3933, lon: -125.1567, requiresLive: true },
   { provider: 'chs', stationId: '63af06d56a2b9417c0353451', label: 'Dent Rapids', lat: 50.41, lon: -125.2117, requiresLive: true },
   { provider: 'chs', stationId: '63aeff5884e5432cd3b71283', label: 'Arran Rapids', lat: 50.42, lon: -125.14, requiresLive: true },
+  { provider: 'chs', stationId: '63aeee896a2b9417c034d337', label: 'Race Passage', lat: 48.3067, lon: -123.5367, requiresLive: true },
+  { provider: 'chs', stationId: '63aeee1d84e5432cd3b6c500', label: 'Juan de Fuca - East', lat: 48.2317, lon: -123.53, requiresLive: true },
+  { provider: 'chs', stationId: '64960066ebd87908f1fcb787', label: 'Tillicum Bridge', lat: 48.4464, lon: -123.4002, requiresLive: true },
+  { provider: 'chs', stationId: '5cebf1e43d0f4a073c4bc434', label: 'Calamity Point', lat: 49.3126, lon: -123.1277, requiresLive: true },
+  { provider: 'chs', stationId: '5dd30650e0fdc4b9b4be6c2d', label: 'Second Narrows', lat: 49.2947, lon: -123.0245, requiresLive: true },
+  { provider: 'chs', stationId: '63aef40a6a2b9417c0350313', label: 'Sechelt Rapids', lat: 49.7383, lon: -123.8983, requiresLive: true },
   { provider: 'noaa', stationId: 'PUG1717', noaaBin: 35, label: 'Boundary Pass', lat: 48.6912, lon: -123.245 },
 ];
