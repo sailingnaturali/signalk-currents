@@ -7,7 +7,7 @@
 // place. See https://github.com/sailingnaturali/current-stations/blob/main/docs/noaa-api.md
 //
 // NOAA data is public domain; derived predictions are UNOFFICIAL. No CHS data here.
-// Run: npm run refresh:constituents  — needs a residential IP (NOAA 404s datacenter IPs).
+// Run: npm run refresh:constituents
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 import { extractBundle } from '@sailingnaturali/current-constituents';

@@ -213,7 +213,6 @@ quietly hand you wrong data (`harcon` is empty at any bin but the station's `cur
 a reference is a `(station, bin)` pair; a `type: S` station with its own constituents
 is predicted harmonically, not by offsets). Commit the result.
 
-Run it from a residential connection — NOAA 404s its metadata API from datacenter IPs.
 The generated DB is committed, so building the plugin never needs this.
 
 ## Development
