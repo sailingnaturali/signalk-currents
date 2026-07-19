@@ -1,9 +1,9 @@
-import { fetchCurrentPredictions } from '@sailingnaturali/current-constituents';
+import { fetchCurrentPredictions } from '@sailingnaturali/current-stations';
 import { CurrentEvent, StationDirs, eventFromParts, CurrentKind } from '../types';
 
 export interface NoaaDayData extends StationDirs { events: CurrentEvent[]; }
 
-// NOAA request/response handling lives in @sailingnaturali/current-constituents —
+// NOAA request/response handling lives in @sailingnaturali/current-stations —
 // the same client the constituent extractor uses, so the API's quirks (bin handling,
 // the two response shapes, gmt time parsing) are dealt with in one place.
 export async function fetchNoaaEvents(

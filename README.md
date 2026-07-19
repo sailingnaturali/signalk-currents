@@ -207,7 +207,7 @@ npm run refresh:constituents
 ```
 
 This regenerates `data/harmonic-constituents.json` from NOAA via
-[`@sailingnaturali/current-constituents`](https://github.com/sailingnaturali/current-stations)
+[`@sailingnaturali/current-stations`](https://github.com/sailingnaturali/current-stations)
 — the shared extractor, which handles the parts of NOAA's API that will otherwise
 quietly hand you wrong data (`harcon` is empty at any bin but the station's `currbin`;
 a reference is a `(station, bin)` pair; a `type: S` station with its own constituents

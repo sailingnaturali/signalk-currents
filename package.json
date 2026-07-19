@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "@neaps/tide-predictor": "^0.10.0",
-    "@sailingnaturali/current-constituents": "^0.1.0",
+    "@sailingnaturali/current-stations": "^0.1.0",
     "@signalk/server-api": "^2.0.0",
     "geolib": "^3.3.4"
   },
