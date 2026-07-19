@@ -206,12 +206,15 @@ constituent accuracy over time.
 npm run refresh:constituents
 ```
 
-This regenerates `data/harmonic-constituents.json` from the
-[slackwater-engine](https://github.com/sailingnaturali/slackwater-engine) currents
-bundle — NOAA CO-OPS `harcon` at each station's `currbin`, already validated against
-NOAA's own published predictions. Clone it beside this repo (or set
-`SLACKWATER_ENGINE`) and commit the result. The generated DB is committed, so
-building the plugin never needs this.
+This regenerates `data/harmonic-constituents.json` from NOAA via
+[`@sailingnaturali/current-constituents`](https://github.com/sailingnaturali/current-stations)
+— the shared extractor, which handles the parts of NOAA's API that will otherwise
+quietly hand you wrong data (`harcon` is empty at any bin but the station's `currbin`;
+a reference is a `(station, bin)` pair; a `type: S` station with its own constituents
+is predicted harmonically, not by offsets). Commit the result.
+
+Run it from a residential connection — NOAA 404s its metadata API from datacenter IPs.
+The generated DB is committed, so building the plugin never needs this.
 
 ## Development
 

@@ -1,24 +1,17 @@
-// Regenerates data/harmonic-constituents.json from the slackwater-engine currents
-// bundle — itself generated from NOAA CO-OPS public-domain harcon metadata at each
-// station's currbin, and validated against NOAA's own currents_predictions
-// (see slackwater-engine/docs/research/2026-07-18-noaa-currents-api.md).
+// Regenerates data/harmonic-constituents.json — the offline fallback constituents for
+// the US-Salish stations in the default gate list.
 //
-// We read that bundle rather than re-querying NOAA so there is ONE extractor: the
-// per-bin/currbin traps it already solved don't get re-litigated here. NOAA data is
-// public domain (tidesandcurrents.noaa.gov/disclaimers.html); predictions derived
-// from it are UNOFFICIAL. Do not bundle CHS data here.
+// Extraction lives in @sailingnaturali/current-constituents, shared with the Swift
+// engine, so the NOAA traps (harcon is empty at any bin but `currbin`; a reference is
+// (station, bin); a type-S station with its own harcon is harmonic) stay solved in one
+// place. See https://github.com/sailingnaturali/current-stations/blob/main/docs/noaa-api.md
 //
-// Run: npx tsx scripts/refresh-constituents.ts
-// Needs a slackwater-engine checkout; override its location with SLACKWATER_ENGINE.
-// The generated DB is committed, so building the plugin never needs this.
-import { readFileSync, writeFileSync } from 'fs';
+// NOAA data is public domain; derived predictions are UNOFFICIAL. No CHS data here.
+// Run: npm run refresh:constituents  — needs a residential IP (NOAA 404s datacenter IPs).
+import { writeFileSync } from 'fs';
 import { join } from 'path';
+import { extractBundle } from '@sailingnaturali/current-constituents';
 
-const ENGINE = process.env.SLACKWATER_ENGINE
-  ?? join(__dirname, '..', '..', 'slackwater-engine');
-const BUNDLE = join(ENGINE, 'Sources', 'TideEngine', 'Resources', 'currents.json');
-
-// US-Salish stations we bundle offline constituents for.
 const STATIONS = [
   'PUG1701', 'PUG1702', 'PUG1616', 'PUG1703',
   'PUG1718', 'PUG1724', 'PUG1734', 'PUG1735', 'PUG1717',
@@ -31,39 +24,36 @@ const NEAPS_KNOWN = new Set([
   '2MK3','M3','MK3','S4','S6','M8','2SM2','SK3','2Q1',
 ]);
 
-interface EngineStation {
-  id: string; type: string;
-  floodDirection: number; ebbDirection: number; offset?: number;
-  constituents?: { name: string; amplitude: number; phase: number }[];
-}
+async function main() {
+  const { bundle, skipped } = await extractBundle({
+    stations: STATIONS,
+    log: (m) => console.log(m),
+  });
+  if (skipped.failed.length) throw new Error(`NOAA fetches failed: ${skipped.failed.join('; ')}`);
 
-function main() {
-  let bundle: { stations: EngineStation[] };
-  try {
-    bundle = JSON.parse(readFileSync(BUNDLE, 'utf8'));
-  } catch {
-    throw new Error(`Cannot read ${BUNDLE} — clone slackwater-engine beside this repo or set SLACKWATER_ENGINE`);
-  }
+  // Emit in STATIONS order, not NOAA's, so a refresh diffs cleanly against the last one.
   const byId = new Map(bundle.stations.map((s) => [s.id, s]));
-
   const stations: Record<string, unknown> = {};
   for (const id of STATIONS) {
     const s = byId.get(id);
-    if (!s) throw new Error(`${id}: not in the engine bundle`);
-    if (s.type !== 'harmonic') throw new Error(`${id}: type ${s.type}, expected harmonic`);
-    stations[id] = {
+    if (!s) continue;
+    if (s.type !== 'harmonic') throw new Error(`${s.id}: expected harmonic, got ${s.type}`);
+    stations[s.id] = {
       floodDir: s.floodDirection,
       ebbDir: s.ebbDirection,
-      z0Kn: s.offset ?? 0, // NOAA majorMeanSpeed — the station's net mean flow
-      constituents: (s.constituents ?? [])
+      z0Kn: s.offset, // NOAA majorMeanSpeed — net mean flow; shifts every slack
+      constituents: s.constituents
         .filter((c) => NEAPS_KNOWN.has(c.name) && c.amplitude > 0)
         .map((c) => ({ name: c.name, amplitudeKn: c.amplitude, phaseDeg: c.phase })),
     };
   }
+  const missing = STATIONS.filter((id) => !stations[id]);
+  if (missing.length) throw new Error(`missing from the bundle: ${missing.join(', ')}`);
 
   const db = {
     generated: new Date().toISOString(),
-    source: 'NOAA CO-OPS mdapi harcon via slackwater-engine (public domain; derived predictions are unofficial)',
+    source: 'NOAA CO-OPS mdapi harcon via @sailingnaturali/current-constituents '
+      + '(public domain; derived predictions are unofficial)',
     stations,
   };
   const out = join(__dirname, '..', 'data', 'harmonic-constituents.json');
@@ -71,4 +61,4 @@ function main() {
   console.log(`Wrote ${out} (${Object.keys(stations).length} stations)`);
 }
 
-main();
+main().catch((e) => { console.error(e); process.exit(1); });
