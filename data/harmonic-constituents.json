@@ -1,1226 +1,1231 @@
 {
-  "generated": "2026-07-09T19:11:22.164Z",
-  "source": "NOAA CO-OPS mdapi harcon (public domain; derived predictions are unofficial)",
+  "generated": "2026-07-19T15:45:47.798Z",
+  "source": "NOAA CO-OPS mdapi harcon via slackwater-engine (public domain; derived predictions are unofficial)",
   "stations": {
     "PUG1701": {
-      "bin": 18,
-      "floodDir": 92.89999999999998,
-      "ebbDir": 272.9,
+      "floodDir": 101.5,
+      "ebbDir": 281.5,
+      "z0Kn": -0.618,
       "constituents": [
         {
           "name": "M2",
-          "amplitudeKn": 5.417888050011275,
+          "amplitudeKn": 5.21,
           "phaseDeg": 241.2
         },
         {
           "name": "S2",
-          "amplitudeKn": 1.1019663947873821,
-          "phaseDeg": 251.6
+          "amplitudeKn": 0.964,
+          "phaseDeg": 253
         },
         {
           "name": "N2",
-          "amplitudeKn": 1.0819447792179517,
-          "phaseDeg": 219.4
+          "amplitudeKn": 0.981,
+          "phaseDeg": 221.6
         },
         {
           "name": "K1",
-          "amplitudeKn": 1.0459836250398489,
-          "phaseDeg": 144.3
+          "amplitudeKn": 1.05,
+          "phaseDeg": 145
         },
         {
           "name": "M4",
-          "amplitudeKn": 0.1269331550178445,
-          "phaseDeg": 192
+          "amplitudeKn": 0.124,
+          "phaseDeg": 225.2
         },
         {
           "name": "O1",
-          "amplitudeKn": 0.37108023419458674,
-          "phaseDeg": 128.2
+          "amplitudeKn": 0.314,
+          "phaseDeg": 130.5
         },
         {
           "name": "M6",
-          "amplitudeKn": 0.3990716190683534,
-          "phaseDeg": 202.2
+          "amplitudeKn": 0.363,
+          "phaseDeg": 210
         },
         {
           "name": "MK3",
-          "amplitudeKn": 0.1409288474547278,
-          "phaseDeg": 171.6
+          "amplitudeKn": 0.24,
+          "phaseDeg": 167.2
         },
         {
           "name": "S4",
-          "amplitudeKn": 0.023909307913008996,
-          "phaseDeg": 124.6
+          "amplitudeKn": 0.026,
+          "phaseDeg": 95.3
         },
         {
           "name": "MN4",
-          "amplitudeKn": 0.06609076984083787,
-          "phaseDeg": 183.2
+          "amplitudeKn": 0.066,
+          "phaseDeg": 224.9
+        },
+        {
+          "name": "S6",
+          "amplitudeKn": 0.029,
+          "phaseDeg": 270.9
         },
         {
           "name": "2N2",
-          "amplitudeKn": 0.18699800172613537,
-          "phaseDeg": 132.4
+          "amplitudeKn": 0.254,
+          "phaseDeg": 124.4
         },
         {
           "name": "OO1",
-          "amplitudeKn": 0.15492453989161112,
-          "phaseDeg": 15.2
+          "amplitudeKn": 0.179,
+          "phaseDeg": 9
         },
         {
           "name": "M1",
-          "amplitudeKn": 0.16503253998491577,
-          "phaseDeg": 184
+          "amplitudeKn": 0.158,
+          "phaseDeg": 197.8
         },
         {
           "name": "J1",
-          "amplitudeKn": 0.08902815466795219,
-          "phaseDeg": 204.9
+          "amplitudeKn": 0.05,
+          "phaseDeg": 162.6
         },
         {
           "name": "Q1",
-          "amplitudeKn": 0.09097200083974154,
-          "phaseDeg": 161.1
+          "amplitudeKn": 0.092,
+          "phaseDeg": 158.2
         },
         {
           "name": "2Q1",
-          "amplitudeKn": 0.05695469283342793,
-          "phaseDeg": 223.5
+          "amplitudeKn": 0.052,
+          "phaseDeg": 245.3
         },
         {
           "name": "P1",
-          "amplitudeKn": 0.3320089261416208,
-          "phaseDeg": 192.2
+          "amplitudeKn": 0.225,
+          "phaseDeg": 180.5
         },
         {
           "name": "2SM2",
-          "amplitudeKn": 0.1230454626742658,
-          "phaseDeg": 109.8
+          "amplitudeKn": 0.116,
+          "phaseDeg": 103
         },
         {
           "name": "M3",
-          "amplitudeKn": 0.08902815466795219,
-          "phaseDeg": 89.7
+          "amplitudeKn": 0.096,
+          "phaseDeg": 83.8
         },
         {
           "name": "L2",
-          "amplitudeKn": 0.4519442349410237,
-          "phaseDeg": 262.8
+          "amplitudeKn": 0.496,
+          "phaseDeg": 260
         },
         {
           "name": "2MK3",
-          "amplitudeKn": 0.25892031008234134,
-          "phaseDeg": 191.8
+          "amplitudeKn": 0.3,
+          "phaseDeg": 197.2
         },
         {
           "name": "M8",
-          "amplitudeKn": 0.053067000489849234,
-          "phaseDeg": 195.1
+          "amplitudeKn": 0.022,
+          "phaseDeg": 178.5
         },
         {
           "name": "MS4",
-          "amplitudeKn": 0.059092923622396216,
-          "phaseDeg": 183.6
+          "amplitudeKn": 0.031,
+          "phaseDeg": 226.4
         }
       ]
     },
     "PUG1702": {
-      "bin": 17,
-      "floodDir": 5,
-      "ebbDir": 185,
+      "floodDir": 4.8,
+      "ebbDir": 184.8,
+      "z0Kn": -0.501,
       "constituents": [
         {
           "name": "M2",
-          "amplitudeKn": 1.6098933994759388,
-          "phaseDeg": 323.9
+          "amplitudeKn": 1.633,
+          "phaseDeg": 323.7
         },
         {
           "name": "S2",
-          "amplitudeKn": 0.4379485425041404,
-          "phaseDeg": 349.8
+          "amplitudeKn": 0.445,
+          "phaseDeg": 350
         },
         {
           "name": "N2",
-          "amplitudeKn": 0.3549463109687352,
-          "phaseDeg": 297.8
+          "amplitudeKn": 0.361,
+          "phaseDeg": 296.8
         },
         {
           "name": "K1",
-          "amplitudeKn": 1.2370637037267418,
-          "phaseDeg": 221.5
+          "amplitudeKn": 1.233,
+          "phaseDeg": 221.1
         },
         {
           "name": "M4",
-          "amplitudeKn": 0.040043231138860595,
-          "phaseDeg": 274.5
+          "amplitudeKn": 0.043,
+          "phaseDeg": 268.7
         },
         {
           "name": "O1",
-          "amplitudeKn": 0.6329163135346122,
-          "phaseDeg": 193.3
+          "amplitudeKn": 0.633,
+          "phaseDeg": 193.1
         },
         {
           "name": "M6",
-          "amplitudeKn": 0.020993538655324974,
-          "phaseDeg": 207.9
+          "amplitudeKn": 0.022,
+          "phaseDeg": 202.5
         },
         {
           "name": "MK3",
-          "amplitudeKn": 0.06200869288008024,
-          "phaseDeg": 53.7
+          "amplitudeKn": 0.078,
+          "phaseDeg": 64.3
         },
         {
           "name": "S4",
-          "amplitudeKn": 0.01904969248353562,
-          "phaseDeg": 332.6
+          "amplitudeKn": 0.016,
+          "phaseDeg": 331.9
         },
         {
           "name": "MN4",
-          "amplitudeKn": 0.015939538608672664,
-          "phaseDeg": 193.5
+          "amplitudeKn": 0.016,
+          "phaseDeg": 186.1
         },
         {
           "name": "NU2",
-          "amplitudeKn": 0.04801300044319693,
-          "phaseDeg": 311.3
+          "amplitudeKn": 0.049,
+          "phaseDeg": 314.4
         },
         {
           "name": "MU2",
-          "amplitudeKn": 0.06103676979418557,
-          "phaseDeg": 231.5
+          "amplitudeKn": 0.067,
+          "phaseDeg": 236.2
         },
         {
           "name": "2N2",
-          "amplitudeKn": 0.059092923622396216,
-          "phaseDeg": 192
+          "amplitudeKn": 0.062,
+          "phaseDeg": 187.6
         },
         {
           "name": "OO1",
-          "amplitudeKn": 0.06609076984083787,
-          "phaseDeg": 295.1
+          "amplitudeKn": 0.066,
+          "phaseDeg": 285.2
         },
         {
           "name": "LAM2",
-          "amplitudeKn": 0.04198707731064995,
-          "phaseDeg": 46.8
+          "amplitudeKn": 0.046,
+          "phaseDeg": 52
         },
         {
           "name": "M1",
-          "amplitudeKn": 0.030907154131450655,
-          "phaseDeg": 99.7
+          "amplitudeKn": 0.026,
+          "phaseDeg": 108.9
         },
         {
           "name": "J1",
-          "amplitudeKn": 0.09894177014407787,
-          "phaseDeg": 195.8
+          "amplitudeKn": 0.097,
+          "phaseDeg": 197.2
         },
         {
           "name": "RHO",
-          "amplitudeKn": 0.007969769304336332,
-          "phaseDeg": 176.9
+          "amplitudeKn": 0.008,
+          "phaseDeg": 236
         },
         {
           "name": "Q1",
-          "amplitudeKn": 0.07192230835620593,
-          "phaseDeg": 157.7
+          "amplitudeKn": 0.08,
+          "phaseDeg": 157.4
         },
         {
           "name": "2Q1",
-          "amplitudeKn": 0.03693307726399763,
-          "phaseDeg": 258.7
+          "amplitudeKn": 0.037,
+          "phaseDeg": 262.5
         },
         {
           "name": "P1",
-          "amplitudeKn": 0.4470846195115503,
-          "phaseDeg": 212.1
+          "amplitudeKn": 0.445,
+          "phaseDeg": 211.8
         },
         {
           "name": "2SM2",
-          "amplitudeKn": 0.015939538608672664,
-          "phaseDeg": 287
+          "amplitudeKn": 0.015,
+          "phaseDeg": 287.7
         },
         {
           "name": "M3",
-          "amplitudeKn": 0.027991384873766626,
-          "phaseDeg": 344.6
+          "amplitudeKn": 0.034,
+          "phaseDeg": 351.5
         },
         {
           "name": "L2",
-          "amplitudeKn": 0.044902846568333966,
-          "phaseDeg": 357.7
+          "amplitudeKn": 0.046,
+          "phaseDeg": 352.2
         },
         {
           "name": "2MK3",
-          "amplitudeKn": 0.07503246223106888,
-          "phaseDeg": 50
+          "amplitudeKn": 0.078,
+          "phaseDeg": 49.5
         },
         {
           "name": "K2",
-          "amplitudeKn": 0.13995692436883314,
-          "phaseDeg": 45.8
+          "amplitudeKn": 0.14,
+          "phaseDeg": 46
         },
         {
           "name": "M8",
-          "amplitudeKn": 0.021965461741219643,
-          "phaseDeg": 149.5
+          "amplitudeKn": 0.019,
+          "phaseDeg": 151
         },
         {
           "name": "MS4",
-          "amplitudeKn": 0.057926615919322605,
-          "phaseDeg": 345.6
+          "amplitudeKn": 0.058,
+          "phaseDeg": 349.1
         }
       ]
     },
     "PUG1616": {
-      "bin": 31,
-      "floodDir": 172.79999999999995,
-      "ebbDir": 352.79999999999995,
+      "floodDir": 172.8,
+      "ebbDir": 352.8,
+      "z0Kn": -0.529,
       "constituents": [
         {
           "name": "M2",
-          "amplitudeKn": 1.973975787452084,
+          "amplitudeKn": 1.974,
           "phaseDeg": 293.6
         },
         {
           "name": "S2",
-          "amplitudeKn": 0.5260047740861978,
+          "amplitudeKn": 0.526,
           "phaseDeg": 317.6
         },
         {
           "name": "N2",
-          "amplitudeKn": 0.44105869637900336,
+          "amplitudeKn": 0.441,
           "phaseDeg": 260.3
         },
         {
           "name": "K1",
-          "amplitudeKn": 0.8490720078375877,
+          "amplitudeKn": 0.849,
           "phaseDeg": 193.4
         },
         {
           "name": "M4",
-          "amplitudeKn": 0.06900653909852189,
+          "amplitudeKn": 0.069,
           "phaseDeg": 210
         },
         {
           "name": "O1",
-          "amplitudeKn": 0.41598308076292073,
+          "amplitudeKn": 0.416,
           "phaseDeg": 168.8
         },
         {
           "name": "M6",
-          "amplitudeKn": 0.012051846265093966,
+          "amplitudeKn": 0.012,
           "phaseDeg": 283.1
         },
         {
           "name": "MK3",
-          "amplitudeKn": 0.18291592476537777,
+          "amplitudeKn": 0.183,
           "phaseDeg": 42.2
         },
         {
           "name": "S4",
-          "amplitudeKn": 0.021965461741219643,
+          "amplitudeKn": 0.022,
           "phaseDeg": 108.9
         },
         {
           "name": "MN4",
-          "amplitudeKn": 0.027019461787871953,
+          "amplitudeKn": 0.027,
           "phaseDeg": 168.1
         },
         {
           "name": "NU2",
-          "amplitudeKn": 0.05092876970088095,
+          "amplitudeKn": 0.051,
           "phaseDeg": 301.1
         },
         {
           "name": "S6",
-          "amplitudeKn": 0.004082076960757634,
+          "amplitudeKn": 0.004,
           "phaseDeg": 268.8
         },
         {
           "name": "MU2",
-          "amplitudeKn": 0.07308861605927952,
+          "amplitudeKn": 0.073,
           "phaseDeg": 196.1
         },
         {
           "name": "2N2",
-          "amplitudeKn": 0.03401730800631361,
+          "amplitudeKn": 0.034,
           "phaseDeg": 285.4
         },
         {
           "name": "OO1",
-          "amplitudeKn": 0.053067000489849234,
+          "amplitudeKn": 0.053,
           "phaseDeg": 277.9
         },
         {
           "name": "LAM2",
-          "amplitudeKn": 0.01807776939764095,
+          "amplitudeKn": 0.018,
           "phaseDeg": 357.4
         },
         {
           "name": "M1",
-          "amplitudeKn": 0.040043231138860595,
+          "amplitudeKn": 0.04,
           "phaseDeg": 233.3
         },
         {
           "name": "J1",
-          "amplitudeKn": 0.027019461787871953,
+          "amplitudeKn": 0.027,
           "phaseDeg": 250.7
         },
         {
           "name": "RHO",
-          "amplitudeKn": 0.06803461601262722,
+          "amplitudeKn": 0.068,
           "phaseDeg": 149.7
         },
         {
           "name": "Q1",
-          "amplitudeKn": 0.07308861605927952,
+          "amplitudeKn": 0.073,
           "phaseDeg": 193.2
         },
         {
           "name": "2Q1",
-          "amplitudeKn": 0.03207346183452426,
+          "amplitudeKn": 0.032,
           "phaseDeg": 122.6
         },
         {
           "name": "P1",
-          "amplitudeKn": 0.2320952329116483,
+          "amplitudeKn": 0.232,
           "phaseDeg": 195.3
         },
         {
           "name": "2SM2",
-          "amplitudeKn": 0.021965461741219643,
+          "amplitudeKn": 0.022,
           "phaseDeg": 150.3
         },
         {
           "name": "M3",
-          "amplitudeKn": 0.013995692436883313,
+          "amplitudeKn": 0.014,
           "phaseDeg": 233.9
         },
         {
           "name": "L2",
-          "amplitudeKn": 0.06103676979418557,
+          "amplitudeKn": 0.061,
           "phaseDeg": 351.4
         },
         {
           "name": "2MK3",
-          "amplitudeKn": 0.15900661685236875,
+          "amplitudeKn": 0.159,
           "phaseDeg": 356.6
         },
         {
           "name": "K2",
-          "amplitudeKn": 0.13801307819704378,
+          "amplitudeKn": 0.138,
           "phaseDeg": 342.2
         },
         {
           "name": "M8",
-          "amplitudeKn": 0.016911461694567337,
+          "amplitudeKn": 0.017,
           "phaseDeg": 336.6
         },
         {
           "name": "MS4",
-          "amplitudeKn": 0.030907154131450655,
+          "amplitudeKn": 0.031,
           "phaseDeg": 257.7
         }
       ]
     },
     "PUG1703": {
-      "bin": 17,
       "floodDir": 347.5,
       "ebbDir": 167.5,
+      "z0Kn": -0.494,
       "constituents": [
         {
           "name": "M2",
-          "amplitudeKn": 2.846957103202681,
+          "amplitudeKn": 2.847,
           "phaseDeg": 288.3
         },
         {
           "name": "S2",
-          "amplitudeKn": 0.5320306972187449,
+          "amplitudeKn": 0.532,
           "phaseDeg": 310.1
         },
         {
           "name": "N2",
-          "amplitudeKn": 0.6630459291973471,
+          "amplitudeKn": 0.663,
           "phaseDeg": 257.7
         },
         {
           "name": "K1",
-          "amplitudeKn": 1.2440615499451835,
+          "amplitudeKn": 1.244,
           "phaseDeg": 173.1
         },
         {
           "name": "M4",
-          "amplitudeKn": 0.1660044630708104,
+          "amplitudeKn": 0.166,
           "phaseDeg": 249
         },
         {
           "name": "O1",
-          "amplitudeKn": 0.7829812379967499,
+          "amplitudeKn": 0.783,
           "phaseDeg": 144.9
         },
         {
           "name": "M6",
-          "amplitudeKn": 0.028963307959661302,
+          "amplitudeKn": 0.029,
           "phaseDeg": 305.1
         },
         {
           "name": "MK3",
-          "amplitudeKn": 0.16406061689902107,
+          "amplitudeKn": 0.164,
           "phaseDeg": 154.3
         },
         {
           "name": "S4",
-          "amplitudeKn": 0.009913615476125681,
+          "amplitudeKn": 0.01,
           "phaseDeg": 309.8
         },
         {
           "name": "MN4",
-          "amplitudeKn": 0.07192230835620593,
+          "amplitudeKn": 0.072,
           "phaseDeg": 222.9
         },
         {
           "name": "S6",
-          "amplitudeKn": 0.004082076960757634,
+          "amplitudeKn": 0.004,
           "phaseDeg": 270.4
         },
         {
           "name": "2N2",
-          "amplitudeKn": 0.10205192401894084,
+          "amplitudeKn": 0.102,
           "phaseDeg": 167
         },
         {
           "name": "OO1",
-          "amplitudeKn": 0.10593961636251954,
+          "amplitudeKn": 0.106,
           "phaseDeg": 77
         },
         {
           "name": "M1",
-          "amplitudeKn": 0.10496769327662486,
+          "amplitudeKn": 0.105,
           "phaseDeg": 271.1
         },
         {
           "name": "J1",
-          "amplitudeKn": 0.035961154178102965,
+          "amplitudeKn": 0.036,
           "phaseDeg": 205.1
         },
         {
           "name": "Q1",
-          "amplitudeKn": 0.0929158470115309,
+          "amplitudeKn": 0.093,
           "phaseDeg": 146.1
         },
         {
           "name": "2Q1",
-          "amplitudeKn": 0.03693307726399763,
+          "amplitudeKn": 0.037,
           "phaseDeg": 325.2
         },
         {
           "name": "P1",
-          "amplitudeKn": 0.3440607724067148,
+          "amplitudeKn": 0.344,
           "phaseDeg": 172.6
         },
         {
           "name": "2SM2",
-          "amplitudeKn": 0.030907154131450655,
+          "amplitudeKn": 0.031,
           "phaseDeg": 219.3
         },
         {
           "name": "M3",
-          "amplitudeKn": 0.05403892357574391,
+          "amplitudeKn": 0.054,
           "phaseDeg": 151.5
         },
         {
           "name": "L2",
-          "amplitudeKn": 0.1770843862500097,
+          "amplitudeKn": 0.177,
           "phaseDeg": 317.2
         },
         {
           "name": "2MK3",
-          "amplitudeKn": 0.07892015457464757,
+          "amplitudeKn": 0.079,
           "phaseDeg": 226.4
         },
         {
           "name": "M8",
-          "amplitudeKn": 0.030907154131450655,
+          "amplitudeKn": 0.031,
           "phaseDeg": 66.8
         },
         {
           "name": "MS4",
-          "amplitudeKn": 0.08708430849616286,
+          "amplitudeKn": 0.087,
           "phaseDeg": 245.9
         }
       ]
     },
     "PUG1718": {
-      "bin": 36,
-      "floodDir": 351.70000000000005,
+      "floodDir": 351.7,
       "ebbDir": 171.70000000000005,
+      "z0Kn": -0.384,
       "constituents": [
         {
           "name": "M2",
-          "amplitudeKn": 0.8850331620156907,
+          "amplitudeKn": 0.885,
           "phaseDeg": 320.1
         },
         {
           "name": "S2",
-          "amplitudeKn": 0.19302392485868236,
+          "amplitudeKn": 0.193,
           "phaseDeg": 14.2
         },
         {
           "name": "N2",
-          "amplitudeKn": 0.20293754033480804,
+          "amplitudeKn": 0.203,
           "phaseDeg": 299
         },
         {
           "name": "K1",
-          "amplitudeKn": 0.6749033908452621,
+          "amplitudeKn": 0.675,
           "phaseDeg": 236.6
         },
         {
           "name": "M4",
-          "amplitudeKn": 0.1119655394950665,
+          "amplitudeKn": 0.112,
           "phaseDeg": 113.8
         },
         {
           "name": "O1",
-          "amplitudeKn": 0.5510803897022806,
+          "amplitudeKn": 0.551,
           "phaseDeg": 190.4
         },
         {
           "name": "M6",
-          "amplitudeKn": 0.01807776939764095,
+          "amplitudeKn": 0.018,
           "phaseDeg": 178.2
         },
         {
           "name": "MK3",
-          "amplitudeKn": 0.1420951551578014,
+          "amplitudeKn": 0.142,
           "phaseDeg": 236.9
         },
         {
           "name": "S4",
-          "amplitudeKn": 0.03693307726399763,
+          "amplitudeKn": 0.037,
           "phaseDeg": 294.5
         },
         {
           "name": "MN4",
-          "amplitudeKn": 0.044902846568333966,
+          "amplitudeKn": 0.045,
           "phaseDeg": 124.3
         },
         {
           "name": "S6",
-          "amplitudeKn": 0.0019438461717893494,
+          "amplitudeKn": 0.002,
           "phaseDeg": 167.8
         },
         {
           "name": "2N2",
-          "amplitudeKn": 0.048984923529091604,
+          "amplitudeKn": 0.049,
           "phaseDeg": 177.3
         },
         {
           "name": "OO1",
-          "amplitudeKn": 0.06706269292673255,
+          "amplitudeKn": 0.067,
           "phaseDeg": 235.1
         },
         {
           "name": "M1",
-          "amplitudeKn": 0.08105838536361586,
+          "amplitudeKn": 0.081,
           "phaseDeg": 3.4
         },
         {
           "name": "J1",
-          "amplitudeKn": 0.059092923622396216,
+          "amplitudeKn": 0.059,
           "phaseDeg": 215.3
         },
         {
           "name": "Q1",
-          "amplitudeKn": 0.07308861605927952,
+          "amplitudeKn": 0.073,
           "phaseDeg": 149
         },
         {
           "name": "2Q1",
-          "amplitudeKn": 0.04198707731064995,
+          "amplitudeKn": 0.042,
           "phaseDeg": 21.7
         },
         {
           "name": "P1",
-          "amplitudeKn": 0.28691169495610797,
+          "amplitudeKn": 0.287,
           "phaseDeg": 224.8
         },
         {
           "name": "2SM2",
-          "amplitudeKn": 0.01904969248353562,
+          "amplitudeKn": 0.019,
           "phaseDeg": 227.8
         },
         {
           "name": "M3",
-          "amplitudeKn": 0.04704107735730225,
+          "amplitudeKn": 0.047,
           "phaseDeg": 90.8
         },
         {
           "name": "L2",
-          "amplitudeKn": 0.06706269292673255,
+          "amplitudeKn": 0.067,
           "phaseDeg": 340.2
         },
         {
           "name": "2MK3",
-          "amplitudeKn": 0.1490930013762431,
+          "amplitudeKn": 0.149,
           "phaseDeg": 238.1
         },
         {
           "name": "K2",
-          "amplitudeKn": 0.15997853993826344,
+          "amplitudeKn": 0.16,
           "phaseDeg": 350.4
         },
         {
           "name": "M8",
-          "amplitudeKn": 0.03693307726399763,
+          "amplitudeKn": 0.037,
           "phaseDeg": 247.1
         },
         {
           "name": "MS4",
-          "amplitudeKn": 0.07503246223106888,
+          "amplitudeKn": 0.075,
           "phaseDeg": 236.4
         }
       ]
     },
     "PUG1724": {
-      "bin": 31,
       "floodDir": 320.5,
       "ebbDir": 140.5,
+      "z0Kn": -0.226,
       "constituents": [
         {
           "name": "M2",
-          "amplitudeKn": 1.0539533943441852,
+          "amplitudeKn": 1.054,
           "phaseDeg": 341.6
         },
         {
           "name": "S2",
-          "amplitudeKn": 0.20799154038146037,
+          "amplitudeKn": 0.208,
           "phaseDeg": 7.1
         },
         {
           "name": "N2",
-          "amplitudeKn": 0.1420951551578014,
+          "amplitudeKn": 0.142,
           "phaseDeg": 328.5
         },
         {
           "name": "K1",
-          "amplitudeKn": 0.9250763931545514,
+          "amplitudeKn": 0.925,
           "phaseDeg": 223.6
         },
         {
           "name": "M4",
-          "amplitudeKn": 0.09894177014407787,
+          "amplitudeKn": 0.099,
           "phaseDeg": 137.1
         },
         {
           "name": "O1",
-          "amplitudeKn": 0.35805646484359815,
+          "amplitudeKn": 0.358,
           "phaseDeg": 207.7
         },
         {
           "name": "M6",
-          "amplitudeKn": 0.0639525390518696,
+          "amplitudeKn": 0.064,
           "phaseDeg": 270.8
         },
         {
           "name": "MK3",
-          "amplitudeKn": 0.15609084759468472,
+          "amplitudeKn": 0.156,
           "phaseDeg": 301.7
         },
         {
           "name": "S4",
-          "amplitudeKn": 0.012051846265093966,
+          "amplitudeKn": 0.012,
           "phaseDeg": 250.4
         },
         {
           "name": "MN4",
-          "amplitudeKn": 0.034989231092208285,
+          "amplitudeKn": 0.035,
           "phaseDeg": 96.3
         },
         {
           "name": "NU2",
-          "amplitudeKn": 0.08591800079308923,
+          "amplitudeKn": 0.086,
           "phaseDeg": 287.8
         },
         {
           "name": "S6",
-          "amplitudeKn": 0.009913615476125681,
+          "amplitudeKn": 0.01,
           "phaseDeg": 121.2
         },
         {
           "name": "MU2",
-          "amplitudeKn": 0.08203030844951054,
+          "amplitudeKn": 0.082,
           "phaseDeg": 147.9
         },
         {
           "name": "2N2",
-          "amplitudeKn": 0.04801300044319693,
+          "amplitudeKn": 0.048,
           "phaseDeg": 100.8
         },
         {
           "name": "OO1",
-          "amplitudeKn": 0.13295907815039149,
+          "amplitudeKn": 0.133,
           "phaseDeg": 252.9
         },
         {
           "name": "LAM2",
-          "amplitudeKn": 0.06997846218441657,
+          "amplitudeKn": 0.07,
           "phaseDeg": 319.8
         },
         {
           "name": "M1",
-          "amplitudeKn": 0.1469547705872748,
+          "amplitudeKn": 0.147,
           "phaseDeg": 317.9
         },
         {
           "name": "J1",
-          "amplitudeKn": 0.027019461787871953,
+          "amplitudeKn": 0.027,
           "phaseDeg": 37.4
         },
         {
           "name": "RHO",
-          "amplitudeKn": 0.06492446213776426,
+          "amplitudeKn": 0.065,
           "phaseDeg": 52.3
         },
         {
           "name": "Q1",
-          "amplitudeKn": 0.11293746258096118,
+          "amplitudeKn": 0.113,
           "phaseDeg": 231.9
         },
         {
           "name": "2Q1",
-          "amplitudeKn": 0.015939538608672664,
+          "amplitudeKn": 0.016,
           "phaseDeg": 268.1
         },
         {
           "name": "P1",
-          "amplitudeKn": 0.19496777103047172,
+          "amplitudeKn": 0.195,
           "phaseDeg": 224.9
         },
         {
           "name": "2SM2",
-          "amplitudeKn": 0.05403892357574391,
+          "amplitudeKn": 0.054,
           "phaseDeg": 265.1
         },
         {
           "name": "M3",
-          "amplitudeKn": 0.09097200083974154,
+          "amplitudeKn": 0.091,
           "phaseDeg": 335.8
         },
         {
           "name": "L2",
-          "amplitudeKn": 0.11507569336992947,
+          "amplitudeKn": 0.115,
           "phaseDeg": 33.9
         },
         {
           "name": "2MK3",
-          "amplitudeKn": 0.1809720785935884,
+          "amplitudeKn": 0.181,
           "phaseDeg": 312.2
         },
         {
           "name": "K2",
-          "amplitudeKn": 0.034989231092208285,
+          "amplitudeKn": 0.035,
           "phaseDeg": 10.9
         },
         {
           "name": "M8",
-          "amplitudeKn": 0.020993538655324974,
+          "amplitudeKn": 0.021,
           "phaseDeg": 180.9
         },
         {
           "name": "MS4",
-          "amplitudeKn": 0.06298061596597491,
+          "amplitudeKn": 0.063,
           "phaseDeg": 218.7
         }
       ]
     },
     "PUG1734": {
-      "bin": 14,
       "floodDir": 76,
       "ebbDir": 256,
+      "z0Kn": -0.739,
       "constituents": [
         {
           "name": "M2",
-          "amplitudeKn": 1.8658979403005962,
+          "amplitudeKn": 1.866,
           "phaseDeg": 304.2
         },
         {
           "name": "S2",
-          "amplitudeKn": 0.4229809269813624,
+          "amplitudeKn": 0.423,
           "phaseDeg": 322.8
         },
         {
           "name": "N2",
-          "amplitudeKn": 0.3949895421075958,
+          "amplitudeKn": 0.395,
           "phaseDeg": 269.9
         },
         {
           "name": "K1",
-          "amplitudeKn": 0.997970624596652,
+          "amplitudeKn": 0.998,
           "phaseDeg": 200
         },
         {
           "name": "M4",
-          "amplitudeKn": 0.05092876970088095,
+          "amplitudeKn": 0.051,
           "phaseDeg": 116.4
         },
         {
           "name": "O1",
-          "amplitudeKn": 0.4840176967755479,
+          "amplitudeKn": 0.484,
           "phaseDeg": 183
         },
         {
           "name": "M6",
-          "amplitudeKn": 0.01904969248353562,
+          "amplitudeKn": 0.019,
           "phaseDeg": 11.6
         },
         {
           "name": "MK3",
-          "amplitudeKn": 0.10691153944841421,
+          "amplitudeKn": 0.107,
           "phaseDeg": 356.6
         },
         {
           "name": "S4",
-          "amplitudeKn": 0.004082076960757634,
+          "amplitudeKn": 0.004,
           "phaseDeg": 318.9
         },
         {
           "name": "MN4",
-          "amplitudeKn": 0.005054000046652308,
+          "amplitudeKn": 0.005,
           "phaseDeg": 24.4
         },
         {
           "name": "2N2",
-          "amplitudeKn": 0.07892015457464757,
+          "amplitudeKn": 0.079,
           "phaseDeg": 132.7
         },
         {
           "name": "OO1",
-          "amplitudeKn": 0.10205192401894084,
+          "amplitudeKn": 0.102,
           "phaseDeg": 265.1
         },
         {
           "name": "M1",
-          "amplitudeKn": 0.05598276974753325,
+          "amplitudeKn": 0.056,
           "phaseDeg": 326.7
         },
         {
           "name": "J1",
-          "amplitudeKn": 0.035961154178102965,
+          "amplitudeKn": 0.036,
           "phaseDeg": 193.3
         },
         {
           "name": "Q1",
-          "amplitudeKn": 0.07095038527031125,
+          "amplitudeKn": 0.071,
           "phaseDeg": 191.4
         },
         {
           "name": "2Q1",
-          "amplitudeKn": 0.01496761552277799,
+          "amplitudeKn": 0.015,
           "phaseDeg": 257
         },
         {
           "name": "P1",
-          "amplitudeKn": 0.2579483869964466,
+          "amplitudeKn": 0.258,
           "phaseDeg": 196
         },
         {
           "name": "2SM2",
-          "amplitudeKn": 0.01807776939764095,
+          "amplitudeKn": 0.018,
           "phaseDeg": 147.5
         },
         {
           "name": "M3",
-          "amplitudeKn": 0.027019461787871953,
+          "amplitudeKn": 0.027,
           "phaseDeg": 33
         },
         {
           "name": "L2",
-          "amplitudeKn": 0.06200869288008024,
+          "amplitudeKn": 0.062,
           "phaseDeg": 348.9
         },
         {
           "name": "2MK3",
-          "amplitudeKn": 0.09894177014407787,
+          "amplitudeKn": 0.099,
           "phaseDeg": 286.8
         },
         {
           "name": "K2",
-          "amplitudeKn": 0.1609504630241581,
+          "amplitudeKn": 0.161,
           "phaseDeg": 341.5
         },
         {
           "name": "M8",
-          "amplitudeKn": 0.005054000046652308,
+          "amplitudeKn": 0.005,
           "phaseDeg": 187.2
         },
         {
           "name": "MS4",
-          "amplitudeKn": 0.04393092348243929,
+          "amplitudeKn": 0.044,
           "phaseDeg": 175.1
         }
       ]
     },
     "PUG1735": {
-      "bin": 14,
-      "floodDir": 80.89999999999998,
+      "floodDir": 80.9,
       "ebbDir": 260.9,
+      "z0Kn": -0.31,
       "constituents": [
         {
           "name": "M2",
-          "amplitudeKn": 1.8509303247778184,
+          "amplitudeKn": 1.851,
           "phaseDeg": 303.8
         },
         {
           "name": "S2",
-          "amplitudeKn": 0.45602631190178133,
+          "amplitudeKn": 0.456,
           "phaseDeg": 325.9
         },
         {
           "name": "N2",
-          "amplitudeKn": 0.4010154652401427,
+          "amplitudeKn": 0.401,
           "phaseDeg": 266.6
         },
         {
           "name": "K1",
-          "amplitudeKn": 1.0520095481723957,
+          "amplitudeKn": 1.052,
           "phaseDeg": 192.6
         },
         {
           "name": "M4",
-          "amplitudeKn": 0.14501092441548544,
+          "amplitudeKn": 0.145,
           "phaseDeg": 265.8
         },
         {
           "name": "O1",
-          "amplitudeKn": 0.5530242358740698,
+          "amplitudeKn": 0.553,
           "phaseDeg": 159.5
         },
         {
           "name": "M6",
-          "amplitudeKn": 0.0069978462184416565,
+          "amplitudeKn": 0.007,
           "phaseDeg": 145
         },
         {
           "name": "MK3",
-          "amplitudeKn": 0.19399584794457705,
+          "amplitudeKn": 0.194,
           "phaseDeg": 145.2
         },
         {
           "name": "S4",
-          "amplitudeKn": 0.005054000046652308,
+          "amplitudeKn": 0.005,
           "phaseDeg": 5.3
         },
         {
           "name": "MN4",
-          "amplitudeKn": 0.07697630840285823,
+          "amplitudeKn": 0.077,
           "phaseDeg": 224.2
         },
         {
           "name": "S6",
-          "amplitudeKn": 0.0029157692576840238,
+          "amplitudeKn": 0.003,
           "phaseDeg": 309.6
         },
         {
           "name": "2N2",
-          "amplitudeKn": 0.04198707731064995,
+          "amplitudeKn": 0.042,
           "phaseDeg": 110
         },
         {
           "name": "OO1",
-          "amplitudeKn": 0.0779482314887529,
+          "amplitudeKn": 0.078,
           "phaseDeg": 269.5
         },
         {
           "name": "M1",
-          "amplitudeKn": 0.06298061596597491,
+          "amplitudeKn": 0.063,
           "phaseDeg": 312.9
         },
         {
           "name": "J1",
-          "amplitudeKn": 0.035961154178102965,
+          "amplitudeKn": 0.036,
           "phaseDeg": 172.6
         },
         {
           "name": "Q1",
-          "amplitudeKn": 0.053067000489849234,
+          "amplitudeKn": 0.053,
           "phaseDeg": 153
         },
         {
           "name": "2Q1",
-          "amplitudeKn": 0.023909307913008996,
+          "amplitudeKn": 0.024,
           "phaseDeg": 186.6
         },
         {
           "name": "P1",
-          "amplitudeKn": 0.27194407943332993,
+          "amplitudeKn": 0.272,
           "phaseDeg": 192.9
         },
         {
           "name": "2SM2",
-          "amplitudeKn": 0.02604753870197728,
+          "amplitudeKn": 0.026,
           "phaseDeg": 177.9
         },
         {
           "name": "M3",
-          "amplitudeKn": 0.025075615616082604,
+          "amplitudeKn": 0.025,
           "phaseDeg": 42.1
         },
         {
           "name": "L2",
-          "amplitudeKn": 0.044902846568333966,
+          "amplitudeKn": 0.045,
           "phaseDeg": 358.9
         },
         {
           "name": "2MK3",
-          "amplitudeKn": 0.028963307959661302,
+          "amplitudeKn": 0.029,
           "phaseDeg": 82.1
         },
         {
           "name": "K2",
-          "amplitudeKn": 0.1529806937198218,
+          "amplitudeKn": 0.153,
           "phaseDeg": 331.5
         },
         {
           "name": "M8",
-          "amplitudeKn": 0.01807776939764095,
+          "amplitudeKn": 0.018,
           "phaseDeg": 28.2
         },
         {
           "name": "MS4",
-          "amplitudeKn": 0.04995684661498627,
+          "amplitudeKn": 0.05,
           "phaseDeg": 268.7
         }
       ]
     },
     "PUG1717": {
-      "bin": 35,
-      "floodDir": 23.19999999999999,
-      "ebbDir": 203.20000000000005,
+      "floodDir": 23.2,
+      "ebbDir": 203.2,
+      "z0Kn": 0.297,
       "constituents": [
         {
           "name": "M2",
-          "amplitudeKn": 1.6299150150453692,
+          "amplitudeKn": 1.63,
           "phaseDeg": 295.3
         },
         {
           "name": "S2",
-          "amplitudeKn": 0.43095069628569876,
+          "amplitudeKn": 0.431,
           "phaseDeg": 325.6
         },
         {
           "name": "N2",
-          "amplitudeKn": 0.4369766194182457,
+          "amplitudeKn": 0.437,
           "phaseDeg": 280.4
         },
         {
           "name": "K1",
-          "amplitudeKn": 0.7709293917316559,
+          "amplitudeKn": 0.771,
           "phaseDeg": 207.1
         },
         {
           "name": "M4",
-          "amplitudeKn": 0.0639525390518696,
+          "amplitudeKn": 0.064,
           "phaseDeg": 51.2
         },
         {
           "name": "O1",
-          "amplitudeKn": 0.7159185450700173,
+          "amplitudeKn": 0.716,
           "phaseDeg": 176.8
         },
         {
           "name": "M6",
-          "amplitudeKn": 0.057926615919322605,
+          "amplitudeKn": 0.058,
           "phaseDeg": 81.3
         },
         {
           "name": "MK3",
-          "amplitudeKn": 0.2470628484344263,
+          "amplitudeKn": 0.247,
           "phaseDeg": 225.4
         },
         {
           "name": "S4",
-          "amplitudeKn": 0.013995692436883313,
+          "amplitudeKn": 0.014,
           "phaseDeg": 330.9
         },
         {
           "name": "MN4",
-          "amplitudeKn": 0.03790500034989231,
+          "amplitudeKn": 0.038,
           "phaseDeg": 39
         },
         {
           "name": "S6",
-          "amplitudeKn": 0.01904969248353562,
+          "amplitudeKn": 0.019,
           "phaseDeg": 350.2
         },
         {
           "name": "2N2",
-          "amplitudeKn": 0.1430670782436961,
+          "amplitudeKn": 0.143,
           "phaseDeg": 276.5
         },
         {
           "name": "OO1",
-          "amplitudeKn": 0.13490292432218084,
+          "amplitudeKn": 0.135,
           "phaseDeg": 352.8
         },
         {
           "name": "M1",
-          "amplitudeKn": 0.11099361640917184,
+          "amplitudeKn": 0.111,
           "phaseDeg": 221.9
         },
         {
           "name": "J1",
-          "amplitudeKn": 0.17397423237514675,
+          "amplitudeKn": 0.174,
           "phaseDeg": 215.5
         },
         {
           "name": "Q1",
-          "amplitudeKn": 0.11390938566685586,
+          "amplitudeKn": 0.114,
           "phaseDeg": 189.7
         },
         {
           "name": "2Q1",
-          "amplitudeKn": 0.05209507740395456,
+          "amplitudeKn": 0.052,
           "phaseDeg": 272.9
         },
         {
           "name": "P1",
-          "amplitudeKn": 0.37807808041302843,
+          "amplitudeKn": 0.378,
           "phaseDeg": 228.4
         },
         {
           "name": "2SM2",
-          "amplitudeKn": 0.048984923529091604,
+          "amplitudeKn": 0.049,
           "phaseDeg": 79
         },
         {
           "name": "M3",
-          "amplitudeKn": 0.0639525390518696,
+          "amplitudeKn": 0.064,
           "phaseDeg": 21.9
         },
         {
           "name": "L2",
-          "amplitudeKn": 0.15492453989161112,
+          "amplitudeKn": 0.155,
           "phaseDeg": 197.7
         },
         {
           "name": "2MK3",
-          "amplitudeKn": 0.20390946342070274,
+          "amplitudeKn": 0.204,
           "phaseDeg": 219.8
         },
         {
           "name": "K2",
-          "amplitudeKn": 0.24395269455956334,
+          "amplitudeKn": 0.244,
           "phaseDeg": 290.5
         },
         {
           "name": "M8",
-          "amplitudeKn": 0.013995692436883313,
+          "amplitudeKn": 0.014,
           "phaseDeg": 245.1
         },
         {
           "name": "MS4",
-          "amplitudeKn": 0.07308861605927952,
+          "amplitudeKn": 0.073,
           "phaseDeg": 110.5
         }
       ]

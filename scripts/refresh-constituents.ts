@@ -1,18 +1,28 @@
-// Regenerates data/harmonic-constituents.json from NOAA CO-OPS public-domain
-// harcon metadata. Run: npx tsx scripts/refresh-constituents.ts
-// NOAA data is public domain (tidesandcurrents.noaa.gov/disclaimers.html);
-// predictions derived from it are UNOFFICIAL. Do not bundle CHS data here.
-import { writeFileSync } from 'fs';
+// Regenerates data/harmonic-constituents.json from the slackwater-engine currents
+// bundle — itself generated from NOAA CO-OPS public-domain harcon metadata at each
+// station's currbin, and validated against NOAA's own currents_predictions
+// (see slackwater-engine/docs/research/2026-07-18-noaa-currents-api.md).
+//
+// We read that bundle rather than re-querying NOAA so there is ONE extractor: the
+// per-bin/currbin traps it already solved don't get re-litigated here. NOAA data is
+// public domain (tidesandcurrents.noaa.gov/disclaimers.html); predictions derived
+// from it are UNOFFICIAL. Do not bundle CHS data here.
+//
+// Run: npx tsx scripts/refresh-constituents.ts
+// Needs a slackwater-engine checkout; override its location with SLACKWATER_ENGINE.
+// The generated DB is committed, so building the plugin never needs this.
+import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-const CM_S_PER_KNOT = 51.4444;
-const MDAPI = 'https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations';
+const ENGINE = process.env.SLACKWATER_ENGINE
+  ?? join(__dirname, '..', '..', 'slackwater-engine');
+const BUNDLE = join(ENGINE, 'Sources', 'TideEngine', 'Resources', 'currents.json');
 
-// stationId -> prediction bin (from the CO-OPS current-station metadata).
-const STATIONS: Record<string, number> = {
-  PUG1701: 18, PUG1702: 17, PUG1616: 31, PUG1703: 17,
-  PUG1718: 36, PUG1724: 31, PUG1734: 14, PUG1735: 14, PUG1717: 35,
-};
+// US-Salish stations we bundle offline constituents for.
+const STATIONS = [
+  'PUG1701', 'PUG1702', 'PUG1616', 'PUG1703',
+  'PUG1718', 'PUG1724', 'PUG1734', 'PUG1735', 'PUG1717',
+];
 
 // Only constituents Neaps knows; skip the rest so nothing is silently dropped.
 const NEAPS_KNOWN = new Set([
@@ -21,36 +31,39 @@ const NEAPS_KNOWN = new Set([
   '2MK3','M3','MK3','S4','S6','M8','2SM2','SK3','2Q1',
 ]);
 
-async function main() {
+interface EngineStation {
+  id: string; type: string;
+  floodDirection: number; ebbDirection: number; offset?: number;
+  constituents?: { name: string; amplitude: number; phase: number }[];
+}
+
+function main() {
+  let bundle: { stations: EngineStation[] };
+  try {
+    bundle = JSON.parse(readFileSync(BUNDLE, 'utf8'));
+  } catch {
+    throw new Error(`Cannot read ${BUNDLE} — clone slackwater-engine beside this repo or set SLACKWATER_ENGINE`);
+  }
+  const byId = new Map(bundle.stations.map((s) => [s.id, s]));
+
   const stations: Record<string, unknown> = {};
-  for (const [id, bin] of Object.entries(STATIONS)) {
-    const url = `${MDAPI}/${id}/harcon.json?bin=${bin}`;
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`${id}: NOAA ${resp.status}`);
-    const hc = ((await resp.json())?.HarmonicConstituents ?? []) as any[];
-    // harcon?bin= may return only that bin, or all bins each tagged binNbr.
-    // Prefer rows matching our bin; if none are tagged, use them all.
-    const forBin = hc.filter((c) => c.binNbr === bin);
-    const rows = forBin.length ? forBin : hc;
-    const constituents = rows
-      .filter((c) => NEAPS_KNOWN.has(c.constituentName) && Number(c.majorAmplitude) > 0)
-      .map((c) => ({
-        name: c.constituentName as string,
-        amplitudeKn: Number(c.majorAmplitude) / CM_S_PER_KNOT, // cm/s -> knots
-        phaseDeg: Number(c.majorPhaseGMT),                     // Greenwich phase, degrees
-      }));
-    // Ellipse major-axis azimuth is the flood set (°true); ebb is the reciprocal.
-    const azi = Number(rows[0]?.azi ?? 0);
+  for (const id of STATIONS) {
+    const s = byId.get(id);
+    if (!s) throw new Error(`${id}: not in the engine bundle`);
+    if (s.type !== 'harmonic') throw new Error(`${id}: type ${s.type}, expected harmonic`);
     stations[id] = {
-      bin,
-      floodDir: ((azi % 360) + 360) % 360,
-      ebbDir: ((azi + 180) % 360 + 360) % 360,
-      constituents,
+      floodDir: s.floodDirection,
+      ebbDir: s.ebbDirection,
+      z0Kn: s.offset ?? 0, // NOAA majorMeanSpeed — the station's net mean flow
+      constituents: (s.constituents ?? [])
+        .filter((c) => NEAPS_KNOWN.has(c.name) && c.amplitude > 0)
+        .map((c) => ({ name: c.name, amplitudeKn: c.amplitude, phaseDeg: c.phase })),
     };
   }
+
   const db = {
     generated: new Date().toISOString(),
-    source: 'NOAA CO-OPS mdapi harcon (public domain; derived predictions are unofficial)',
+    source: 'NOAA CO-OPS mdapi harcon via slackwater-engine (public domain; derived predictions are unofficial)',
     stations,
   };
   const out = join(__dirname, '..', 'data', 'harmonic-constituents.json');
@@ -58,4 +71,4 @@ async function main() {
   console.log(`Wrote ${out} (${Object.keys(stations).length} stations)`);
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main();

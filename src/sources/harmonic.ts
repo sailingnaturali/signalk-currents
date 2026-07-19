@@ -4,7 +4,9 @@ import { createTidePredictor } from '@neaps/tide-predictor';
 import { CurrentEvent, eventFromParts, StationDirs } from '../types';
 
 export interface HarmonicConstituentEntry { name: string; amplitudeKn: number; phaseDeg: number; }
-export interface HarmonicStation { bin: number; floodDir: number; ebbDir: number; constituents: HarmonicConstituentEntry[]; }
+// z0Kn is NOAA's majorMeanSpeed — the station's net mean flow along the major axis.
+// Salish passes run −0.74..+0.30 kn of it; dropping it drifts slack timing badly.
+export interface HarmonicStation { floodDir: number; ebbDir: number; z0Kn?: number; constituents: HarmonicConstituentEntry[]; }
 export interface HarmonicDb { generated: string; source: string; stations: Record<string, HarmonicStation>; }
 
 let cached: HarmonicDb | undefined;
@@ -28,16 +30,19 @@ export function harmonicStationFor(db: HarmonicDb, stationId: string): HarmonicS
 // it to slack/flood/ebb events — the same shape the live CHS/NOAA sources emit.
 // Positive level = flood (along floodDir); negative = ebb. Slack = zero crossing.
 export function synthesizeEvents(hs: HarmonicStation, start: Date, end: Date): CurrentEvent[] {
+  // `offset` is injected as a Z0 constituent, shifting the whole curve by the
+  // station's mean flow — this is what aligns slack (the zero crossing) with NOAA.
   const predictor = createTidePredictor(
     hs.constituents.map((c) => ({ name: c.name, amplitude: c.amplitudeKn, phase: c.phaseDeg })),
+    { offset: hs.z0Kn ?? 0 },
   );
 
-  // Flood/ebb peaks come straight from the extremes predictor.
+  // Flood/ebb peaks come straight from the extremes predictor. Label by the SIGN of
+  // the velocity, not the extremum's high/low: with Z0 applied a relaxation peak that
+  // never reverses stays flood/ebb per its sign (matches NOAA's max_slack labeling).
   const extremes = predictor.getExtremesPrediction({ start, end });
-  // ponytail: assumes mean-zero constituents (no Z0/DC-offset term) — a level-curve max
-  // is a positive (flood) peak; adding a Z0 constituent would shift the baseline and could flip labels.
   const events: CurrentEvent[] = extremes.map((x) =>
-    eventFromParts(x.time.toISOString(), x.high ? 'flood' : 'ebb', Math.abs(x.level)),
+    eventFromParts(x.time.toISOString(), x.level >= 0 ? 'flood' : 'ebb', Math.abs(x.level)),
   );
 
   // Slack = sign change on a 1-minute timeline; linear-interpolate the crossing.

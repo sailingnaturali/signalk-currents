@@ -1,0 +1,129 @@
+{
+  "note": "NOAA CO-OPS currents_predictions oracle (public domain). Captured 2026-07-19 for PUG1717 bin 35 (Boundary Pass / Turn Point).",
+  "station": "PUG1717",
+  "bin": 35,
+  "begin": "2026-07-19",
+  "end": "2026-07-21",
+  "events": [
+    {
+      "utc": "2026-07-19T01:44Z",
+      "kind": "flood",
+      "velocityMajorKn": 2.85
+    },
+    {
+      "utc": "2026-07-19T05:37Z",
+      "kind": "slack",
+      "velocityMajorKn": -0.01
+    },
+    {
+      "utc": "2026-07-19T07:31Z",
+      "kind": "ebb",
+      "velocityMajorKn": -1.26
+    },
+    {
+      "utc": "2026-07-19T09:58Z",
+      "kind": "slack",
+      "velocityMajorKn": 0
+    },
+    {
+      "utc": "2026-07-19T13:02Z",
+      "kind": "flood",
+      "velocityMajorKn": 1.88
+    },
+    {
+      "utc": "2026-07-19T16:36Z",
+      "kind": "slack",
+      "velocityMajorKn": 0
+    },
+    {
+      "utc": "2026-07-19T19:41Z",
+      "kind": "ebb",
+      "velocityMajorKn": -2.39
+    },
+    {
+      "utc": "2026-07-19T22:51Z",
+      "kind": "slack",
+      "velocityMajorKn": 0
+    },
+    {
+      "utc": "2026-07-20T02:08Z",
+      "kind": "flood",
+      "velocityMajorKn": 2.45
+    },
+    {
+      "utc": "2026-07-20T06:01Z",
+      "kind": "slack",
+      "velocityMajorKn": -0.01
+    },
+    {
+      "utc": "2026-07-20T08:01Z",
+      "kind": "ebb",
+      "velocityMajorKn": -1.11
+    },
+    {
+      "utc": "2026-07-20T10:25Z",
+      "kind": "slack",
+      "velocityMajorKn": -0.01
+    },
+    {
+      "utc": "2026-07-20T13:51Z",
+      "kind": "flood",
+      "velocityMajorKn": 1.54
+    },
+    {
+      "utc": "2026-07-20T17:35Z",
+      "kind": "slack",
+      "velocityMajorKn": 0
+    },
+    {
+      "utc": "2026-07-20T20:30Z",
+      "kind": "ebb",
+      "velocityMajorKn": -1.75
+    },
+    {
+      "utc": "2026-07-20T23:21Z",
+      "kind": "slack",
+      "velocityMajorKn": 0
+    },
+    {
+      "utc": "2026-07-21T02:37Z",
+      "kind": "flood",
+      "velocityMajorKn": 2.15
+    },
+    {
+      "utc": "2026-07-21T06:14Z",
+      "kind": "slack",
+      "velocityMajorKn": 0
+    },
+    {
+      "utc": "2026-07-21T08:31Z",
+      "kind": "ebb",
+      "velocityMajorKn": -1.12
+    },
+    {
+      "utc": "2026-07-21T11:03Z",
+      "kind": "slack",
+      "velocityMajorKn": 0
+    },
+    {
+      "utc": "2026-07-21T15:06Z",
+      "kind": "flood",
+      "velocityMajorKn": 1.24
+    },
+    {
+      "utc": "2026-07-21T19:03Z",
+      "kind": "slack",
+      "velocityMajorKn": 0
+    },
+    {
+      "utc": "2026-07-21T21:23Z",
+      "kind": "ebb",
+      "velocityMajorKn": -1.04
+    },
+    {
+      "utc": "2026-07-21T23:47Z",
+      "kind": "slack",
+      "velocityMajorKn": 0
+    }
+  ]
+}

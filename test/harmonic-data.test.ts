@@ -19,7 +19,7 @@ describe('bundled harmonic constituent data', () => {
     for (const id of EXPECTED_STATIONS) {
       const s = (db.stations as Record<string, any>)[id];
       expect(s, `missing station ${id}`).toBeTruthy();
-      expect(Number.isFinite(s.bin)).toBe(true);
+      expect(Number.isFinite(s.z0Kn), `missing z0Kn (mean flow) @ ${id}`).toBe(true);
       expect(Number.isFinite(s.floodDir)).toBe(true);
       expect(Number.isFinite(s.ebbDir)).toBe(true);
       expect(s.constituents.length).toBeGreaterThanOrEqual(4);

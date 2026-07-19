@@ -157,6 +157,12 @@ harmonic constituents fall back to offline synthesis via
 [Neaps](https://github.com/neaps/neaps), so `environment.current` and `/currents`
 keep flowing without a network connection.
 
+Constituents include each station's Z0 mean-flow term (NOAA `majorMeanSpeed`) — the
+Salish passes run −0.74..+0.30 kn of net drift, and omitting it skews slack timing.
+Measured against NOAA's own predictions at Boundary Pass over three days: **7.4 min
+mean / 21 min worst** on event timing, 0.07 kn on peak speed (`test/harmonic-oracle.test.ts`
+gates this). Without Z0 the same comparison was 15.6 min mean / 55 min worst.
+
 ### Provenance fields
 
 Every reading carries two extra fields:
@@ -200,8 +206,12 @@ constituent accuracy over time.
 npm run refresh:constituents
 ```
 
-This re-fetches NOAA harmonic constituents for all NOAA stations in the default gate
-list and overwrites `data/harmonic-constituents.json`. Commit the result to update the bundle.
+This regenerates `data/harmonic-constituents.json` from the
+[slackwater-engine](https://github.com/sailingnaturali/slackwater-engine) currents
+bundle — NOAA CO-OPS `harcon` at each station's `currbin`, already validated against
+NOAA's own published predictions. Clone it beside this repo (or set
+`SLACKWATER_ENGINE`) and commit the result. The generated DB is committed, so
+building the plugin never needs this.
 
 ## Development
 
