@@ -22,8 +22,9 @@ export interface StationConfig {
   floodDirEstimated?: boolean;
   ebbDirEstimated?: boolean;
   // Strong passage where harmonic fallback must not be trusted for transit
-  // decisions — seeded from the currents-mcp passage list. When true and the
-  // reading is harmonic-only, consumers get unreliableForTransit: true.
+  // decisions — set per station in defaults.ts (no upstream source publishes
+  // this judgment). When true and the reading is harmonic-only, consumers get
+  // unreliableForTransit: true.
   requiresLive?: boolean;
 }
 
