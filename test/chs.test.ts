@@ -53,3 +53,29 @@ describe('fetchChsDirections', () => {
     expect(url).toContain('/stations/..%2Fevil/metadata');
   });
 });
+
+describe('CHS rate limiting', () => {
+  it('retries a 429 and succeeds on the follow-up', async () => {
+    // Cold start fetches every configured station back-to-back; CHS 429s the
+    // tail of that burst, which silently left those gates with no data.
+    let calls = 0;
+    const fakeFetch = async () => {
+      calls += 1;
+      return calls === 1
+        ? { ok: false, status: 429 } as any
+        : { ok: true, status: 200, json: async () => rows } as any;
+    };
+    const ev = await fetchChsEvents('abc', new Date('2026-06-06T00:00:00Z'),
+      new Date('2026-06-07T00:00:00Z'), fakeFetch);
+    expect(calls).toBe(2);
+    expect(ev.map(e => e.kind)).toEqual(['slack', 'flood']);
+  });
+
+  it('gives up after repeated 429s rather than looping forever', async () => {
+    let calls = 0;
+    const fakeFetch = async () => { calls += 1; return { ok: false, status: 429 } as any; };
+    await expect(fetchChsEvents('abc', new Date('2026-06-06T00:00:00Z'),
+      new Date('2026-06-07T00:00:00Z'), fakeFetch)).rejects.toThrow('CHS 429');
+    expect(calls).toBe(3);
+  });
+});
