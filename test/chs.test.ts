@@ -79,3 +79,21 @@ describe('CHS rate limiting', () => {
     expect(calls).toBe(3);
   });
 });
+
+describe('WEAK_AND_VARIABLE qualifier', () => {
+  it('treats a weak-and-variable period as slack', async () => {
+    // Stations in channels that never cleanly reverse (Johnstone Strait -
+    // Central) publish WEAK_AND_VARIABLE instead of SLACK, and may emit no
+    // EXTREMA_FLOOD at all. Unmapped, every such event was dropped and the
+    // station served no slack windows at all.
+    const rows = [
+      { eventDate: '2026-07-20T00:43:00Z', qualifier: 'WEAK_AND_VARIABLE', value: 0.0 },
+      { eventDate: '2026-07-20T06:41:00Z', qualifier: 'EXTREMA_EBB', value: 1.0 },
+    ];
+    const fakeFetch = async () => ({ ok: true, status: 200, json: async () => rows }) as any;
+    const ev = await fetchChsEvents('jsc', new Date('2026-07-20T00:00:00Z'),
+      new Date('2026-07-21T00:00:00Z'), fakeFetch);
+    expect(ev.map(e => e.kind)).toEqual(['slack', 'ebb']);
+    expect(ev[0].speedKn).toBe(0);
+  });
+});

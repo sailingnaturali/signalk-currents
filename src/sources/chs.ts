@@ -1,8 +1,14 @@
 import { CurrentEvent, StationDirs, eventFromParts } from '../types';
 
 const CHS_BASE = 'https://api-sine.dfo-mpo.gc.ca/api/v1';
+// WEAK_AND_VARIABLE is CHS's marker for a low-current period at stations whose
+// stream never cleanly reverses — Johnstone Strait - Central publishes it in
+// place of SLACK, and emits no EXTREMA_FLOOD at all, because a residual westward
+// flow can suppress the surface flood entirely. It is the transit window a
+// mariner actually wants, so it maps to slack; unmapped, those stations served
+// no slack windows at all.
 const KIND: Record<string, 'slack' | 'flood' | 'ebb'> = {
-  SLACK: 'slack', EXTREMA_FLOOD: 'flood', EXTREMA_EBB: 'ebb',
+  SLACK: 'slack', WEAK_AND_VARIABLE: 'slack', EXTREMA_FLOOD: 'flood', EXTREMA_EBB: 'ebb',
 };
 const isoZ = (d: Date) => d.toISOString().replace(/\.\d{3}Z$/, 'Z');
 
