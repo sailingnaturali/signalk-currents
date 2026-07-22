@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Currents — build offline CHS models</title>
+  <style>
+    body { font: 15px/1.5 system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; }
+    button { font-size: 1rem; padding: 0.5rem 1rem; }
+    #log { white-space: pre-wrap; background: #f4f4f4; padding: 0.75rem; border-radius: 6px; margin-top: 1rem; min-height: 3rem; }
+    .note { color: #555; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <h1>Offline CHS current models</h1>
+  <p>Fetches every live CHS current station and fits harmonic models on this machine,
+     under your own CHS licence, for offline Canadian current prediction. Runs ~30 minutes.</p>
+  <p class="note">Output stays on this server and must not be redistributed (Crown copyright, not for navigation).</p>
+  <button id="go">Build offline models</button>
+  <div id="log">idle</div>
+  <script>
+    const log = document.getElementById('log');
+    const go = document.getElementById('go');
+    async function poll() {
+      const s = await (await fetch('build/status', { credentials: 'include' })).json();
+      log.textContent = s.error ? ('failed: ' + s.error) : s.message;
+      go.disabled = s.running;
+      if (s.running) setTimeout(poll, 3000);
+    }
+    go.onclick = async () => {
+      go.disabled = true; log.textContent = 'starting…';
+      const r = await fetch('build', { method: 'POST', credentials: 'include' });
+      if (!r.ok) { log.textContent = 'start failed (' + r.status + ') — are you logged in as admin?'; go.disabled = false; return; }
+      poll();
+    };
+    poll();
+  </script>
+</body>
+</html>
