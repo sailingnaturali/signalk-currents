@@ -10,15 +10,20 @@ export interface DayData extends StationDirs { events: CurrentEvent[]; }
 type DayFetcher = (s: StationConfig, dayStart: Date, dayEnd: Date) => Promise<DayData>;
 type DirFetcher = (s: StationConfig) => Promise<StationDirs>;
 
+const chsLiveId = (s: StationConfig): string => {
+  if (!s.liveId) throw new Error(`no live id for ${s.label}`);
+  return s.liveId;
+};
+
 const defaultFetcher: DayFetcher = async (s, a, b) =>
   s.provider === 'chs'
-    ? { events: await fetchChsEvents(s.stationId, a, b) }
+    ? { events: await fetchChsEvents(chsLiveId(s), a, b) }
     : fetchNoaaEvents(s.stationId, s.noaaBin ?? 0, a, b);
 
 // Directions are static per station, so they only need fetching for CHS (NOAA
 // supplies them inline with each day's events).
 const defaultDirFetcher: DirFetcher = (s) =>
-  s.provider === 'chs' ? fetchChsDirections(s.stationId) : Promise.resolve({});
+  s.provider === 'chs' ? fetchChsDirections(chsLiveId(s)) : Promise.resolve({});
 
 function utcDays(start: Date, n: number): string[] {
   const base = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));

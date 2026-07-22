@@ -26,6 +26,10 @@ export interface StationConfig {
   // this judgment). When true and the reading is harmonic-only, consumers get
   // unreliableForTransit: true.
   requiresLive?: boolean;
+  // Ephemeral IWLS station id for a CHS gate, resolved live at runtime (see
+  // resolveLiveIds). NEVER committed. `stationId` above is the stable identity
+  // (registry key for CHS); `liveId` is only the fetch handle.
+  liveId?: string;
 }
 
 export interface StationDirs {

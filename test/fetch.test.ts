@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { stationData } from '../src/fetch';
 import { StationConfig } from '../src/types';
+import * as chs from '../src/sources/chs';
 
 const station: StationConfig = { provider: 'chs', stationId: 'g', label: 'Gillard',
   lat: 50.39, lon: -125.15 };
@@ -52,5 +53,25 @@ describe('stationData', () => {
       new Map<string, any>(), async () => ({ events: [] }), noDirs);
     expect(a.floodDir).toBeUndefined();
     expect(a.ebbDir).toBeUndefined();
+  });
+});
+
+describe('CHS fetch uses liveId, not the stable stationId', () => {
+  const base: StationConfig = {
+    provider: 'chs', stationId: 'chs-dodd-narrows', label: 'Dodd Narrows', lat: 49.13, lon: -123.81,
+  };
+
+  it('passes station.liveId to the CHS events fetcher', async () => {
+    const spy = vi.spyOn(chs, 'fetchChsEvents').mockResolvedValue([]);
+    vi.spyOn(chs, 'fetchChsDirections').mockResolvedValue({ floodDir: 100, ebbDir: 280 });
+    await stationData({ ...base, liveId: 'IWLS123' }, new Date('2026-07-01T00:00:00Z'), 1, new Map());
+    expect(spy.mock.calls[0][0]).toBe('IWLS123');
+    vi.restoreAllMocks();
+  });
+
+  it('throws when a CHS station has no liveId', async () => {
+    await expect(
+      stationData(base, new Date('2026-07-01T00:00:00Z'), 1, new Map()),
+    ).rejects.toThrow(/no live id for Dodd Narrows/);
   });
 });
