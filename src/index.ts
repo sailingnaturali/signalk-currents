@@ -9,6 +9,9 @@ import { currentsPayload, StationSeries } from './routes';
 import { loadHarmonicDb, harmonicStationFor, synthesizeHorizon } from './sources/harmonic';
 import { selectData } from './select';
 import { computeDiscrepancy, appendDiscrepancy } from './compare';
+import { effectiveStations } from './registry-stations';
+import { resolveLiveIds, normalizeName } from './sources/iwls-index';
+import { runBuild, buildStatus } from './build-action';
 
 interface Options {
   stations?: StationConfig[];
@@ -23,6 +26,8 @@ export = function (app: ServerAPI): Plugin {
   const cache: DayCache = createCache();
   const series = new Map<string, StationSeries>();
   let timer: ReturnType<typeof setInterval> | undefined;
+  let harmonicDb: ReturnType<typeof loadHarmonicDb>;
+  let chsBundlePath: string;
 
   const plugin: Plugin = {
     id: 'signalk-currents',
@@ -51,13 +56,26 @@ export = function (app: ServerAPI): Plugin {
       },
     },
 
-    start(options: Options) {
-      const stations = options.stations ?? DEFAULT_STATIONS;
+    async start(options: Options) {
+      const stations = effectiveStations(options.stations ?? DEFAULT_STATIONS);
       const horizonDays = options.horizonDays ?? 3;
       const pollMinutes = options.pollMinutes ?? 60;
 
-      // Load bundled harmonic constituents once; resolve discrepancy log path.
-      const harmonicDb = loadHarmonicDb();
+      // Resolve each CHS gate's live IWLS id by name (used only to fetch; never
+      // stored). Offline, resolution fails → those gates serve the harmonic
+      // fallback (once built). Re-resolved on each start.
+      try {
+        const liveIds = await resolveLiveIds();
+        for (const s of stations) {
+          if (s.provider === 'chs') s.liveId = liveIds.get(normalizeName(s.label));
+        }
+      } catch (e) {
+        app.debug(`live CHS id resolution failed (offline?): ${(e as Error).message}`);
+      }
+
+      // Load bundled + data-dir CHS constituents once; resolve discrepancy log path.
+      chsBundlePath = join(app.getDataDirPath(), 'chs-constituents.json');
+      harmonicDb = loadHarmonicDb(undefined, chsBundlePath);
       const discrepancyLog = join(app.getDataDirPath(), 'signalk-currents-discrepancies.jsonl');
 
       // Expose the per-station series as a SignalK resource — served at
@@ -183,6 +201,22 @@ export = function (app: ServerAPI): Plugin {
         clearInterval(timer);
         timer = undefined;
       }
+    },
+
+    registerWithRouter(router) {
+      // POST /plugins/signalk-currents/build — kick off the offline model build.
+      // Admin-gated (registerWithRouter is), which is correct for a ~30-min job.
+      router.post('/build', (_req: unknown, res: { status: (n: number) => { json: (b: unknown) => void } }) => {
+        runBuild({
+          dataDir: app.getDataDirPath(),
+          onProgress: (m) => app.setPluginStatus(`offline build: ${m}`),
+          onDone: () => { harmonicDb = loadHarmonicDb(undefined, chsBundlePath); }, // hot-reload
+        });
+        res.status(202).json(buildStatus());
+      });
+      router.get('/status', (_req: unknown, res: { json: (b: unknown) => void }) => {
+        res.json(buildStatus());
+      });
     },
   };
 

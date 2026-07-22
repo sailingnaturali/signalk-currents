@@ -35,6 +35,7 @@
   "files": [
     "dist",
     "data",
+    "public",
     "docs/screenshots/"
   ],
   "publishConfig": {
@@ -45,7 +46,9 @@
   },
   "dependencies": {
     "@neaps/tide-predictor": "^0.10.0",
+    "@sailingnaturali/chs-constituents": "^0.1.0",
     "@sailingnaturali/current-stations": "^0.1.0",
+    "@sailingnaturali/station-corrections": "^2.0.0",
     "@signalk/server-api": "^2.0.0",
     "geolib": "^3.3.4"
   },

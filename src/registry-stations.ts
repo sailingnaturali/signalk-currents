@@ -31,3 +31,13 @@ export function registryChsStations(data: RegistryData = registry as RegistryDat
       requiresLive: STRONG_GATES.has(e.name) ? true : undefined,
     }));
 }
+
+// The effective station list: the config default (NOAA only) plus every CHS gate
+// from the shared registry. Config entries win on stationId collision, so an
+// operator can override a registry gate locally without editing the registry.
+export function effectiveStations(configStations: StationConfig[]): StationConfig[] {
+  const byId = new Map<string, StationConfig>();
+  for (const s of registryChsStations()) byId.set(s.stationId, s);
+  for (const s of configStations) byId.set(s.stationId, s); // config overrides registry
+  return [...byId.values()];
+}
