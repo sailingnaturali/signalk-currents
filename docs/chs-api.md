@@ -34,7 +34,7 @@ cache could brush the per-minute cap.
 | GET | `/stations/{id}/metadata` | Full metadata incl. `floodDirection`/`ebbDirection` |
 | GET | `/stations/{id}/data?time-series-code=…&from=…&to=…` | Time-series data |
 
-`{id}` is the 24-hex Mongo-style `id` (e.g. `63aef1866a2b9417c035030f`), **not** the
+`{id}` is the 24-hex Mongo-style `id` (e.g. `<24-hex-id>`), **not** the
 human station `code` (`"07487"`). Encode it as a single path segment.
 
 ### Finding a station id

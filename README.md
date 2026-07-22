@@ -9,8 +9,10 @@ currents APIs for a configured list of current stations, and:
 - serves a **`/currents`** resource — the full slack / flood / ebb event series for
   every configured station.
 
-There are **no hardcoded stations or gates** — the station list is plugin config, so
-it works anywhere CHS or NOAA publishes current predictions.
+CHS gates are auto-loaded at runtime from the shared
+[`@sailingnaturali/station-corrections`](https://github.com/sailingnaturali/station-corrections)
+registry (no CHS ids ship in this repo); NOAA and any custom stations come from
+plugin config.
 
 ## How it works
 
@@ -42,28 +44,29 @@ Configured from the SignalK server plugin UI.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `stations` | array | 17 Salish Sea / Desolation Sound gates (see below) | Current stations. |
+| `stations` | array | NOAA Boundary Pass; CHS gates auto-loaded from the registry | Current stations. |
 | `horizonDays` | number | `3` | How many UTC days of predictions to fetch/keep. |
 | `pollMinutes` | number | `60` | How often to refresh and republish. |
 
-**Default stations.** Out of the box the plugin ships the Salish Sea / Desolation
-Sound tidal gates (Dodd Narrows, Active/Porlier/Gabriola Passages, Seymour
-Narrows, Beazley Passage, Hole in the Wall, Gillard Passage, Dent and Arran
-Rapids, Race Passage, Juan de Fuca - East, Tillicum Bridge, Calamity Point,
-Second Narrows, Sechelt Rapids, and Boundary Pass), so `/currents` is populated
-without any configuration.
-Station IDs mirror the [`currents-mcp`](https://github.com/sailingnaturali/currents-mcp)
-passage database, so every gate that MCP knows resolves here. Edit or replace the
-list for your own cruising ground. Set directions aren't baked into the defaults —
-both providers publish them (CHS in station metadata, NOAA inline), so every gate
-gets an authoritative `setTrue` fetched at runtime.
+**Default stations.** The plugin ships only one config default, NOAA Boundary Pass
+— CHS is Crown-copyright data and no CHS station id is committed to this repo. The
+Salish Sea / Desolation Sound CHS gates (Dodd Narrows, Active/Porlier Passages,
+Seymour Narrows, Beazley Passage, Hole in the Wall, Gillard Passage, Dent and Arran
+Rapids, and more) are loaded automatically at runtime from the shared
+[`@sailingnaturali/station-corrections`](https://github.com/sailingnaturali/station-corrections)
+registry by name; each gate's live CHS station id is resolved from the IWLS
+`/stations` index (under the operator's own CHS licence) only when fetching, never
+persisted. Add entries to `stations` to override a registry gate or add your own
+cruising ground. Set directions aren't baked into the defaults — both providers
+publish them (CHS in station metadata, NOAA inline), so every gate gets an
+authoritative `setTrue` fetched at runtime.
 
 Each entry in `stations`:
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `provider` | `"chs"` \| `"noaa"` | Prediction source. |
-| `stationId` | string | CHS station id, or NOAA station id (e.g. `PUG1717`). |
+| `stationId` | string | For CHS, the [`station-corrections`](https://github.com/sailingnaturali/station-corrections) registry key (e.g. `chs-active-pass`) — the live IWLS station id is resolved from that key at runtime, never configured. For NOAA, the NOAA station id (e.g. `PUG1717`). |
 | `noaaBin` | number | NOAA current-station bin (NOAA only). |
 | `label` | string | Human-readable name. |
 | `lat` / `lon` | number | Station position (used for nearest-station selection). |
@@ -72,21 +75,13 @@ Each entry in `stations`:
 
 ### Example station config
 
-Gillard Passage (CHS) and Boundary Pass (NOAA), drawn from our
-[`currents-mcp`](https://github.com/sailingnaturali/currents-mcp) passage database:
+The shipped NOAA default. CHS gates need no config at all — they're loaded
+automatically from the [`station-corrections`](https://github.com/sailingnaturali/station-corrections)
+registry:
 
 ```json
 {
   "stations": [
-    {
-      "provider": "chs",
-      "stationId": "5dd3064fe0fdc4b9b4be6978",
-      "label": "Gillard Passage",
-      "lat": 50.3933,
-      "lon": -125.1567,
-      "floodDir": 160,
-      "ebbDir": 340
-    },
     {
       "provider": "noaa",
       "stationId": "PUG1717",
@@ -126,7 +121,7 @@ Served at `/signalk/v2/api/resources/currents` (anonymously readable under
 {
   "stations": [
     {
-      "stationId": "5dd3064fe0fdc4b9b4be6978",
+      "stationId": "chs-gillard-passage",
       "label": "Gillard Passage",
       "lat": 50.3933,
       "lon": -125.1567,
@@ -172,21 +167,34 @@ Every reading carries two extra fields:
 | `source` | `"chs"` \| `"noaa"` \| `"harmonic"` | Where this prediction came from. |
 | `live` | `true` \| `false` | `false` when synthesized offline from constituents. |
 
-A station flagged `requiresLive: true` in config (the strong narrows — Dent, Arran,
-Seymour, Gillard, Hole in the Wall) is tagged `unreliableForTransit: true` whenever
-it is served harmonic-only. The harmonic model gives a reasonable baseline for
+A station flagged `requiresLive: true` — from the plugin's committed `STRONG_GATES`
+set (`src/registry-stations.ts`: Seymour Narrows, Dent Rapids, Gillard Passage, Dodd
+Narrows, Active Pass, Beazley Passage, Hole in the Wall, Arran Rapids, Sechelt
+Rapids), not per-station config — is tagged `unreliableForTransit: true` whenever it
+is served harmonic-only. The harmonic model gives a reasonable baseline for
 planning, but constituent-derived slack timing at fast narrows can be off by tens of
 minutes. **Do not use a harmonic-only reading to time a transit of the rapids.**
 A deeper look at why harmonic predictions fall short at constricted passes will be
 written up on the engineering blog when the model has been run against live data for
 a season.
 
+### Building offline CHS models
+
+An operator with their own CHS licence can build a local harmonic model for the
+CHS gates: SignalK Server → Webapps → this plugin has a **Build offline CHS
+models** button. It runs the [`@sailingnaturali/chs-constituents`](https://github.com/sailingnaturali/chs-constituents)
+pipeline against the live IWLS API (~30 minutes for the full gate list) and writes
+the result to `<SignalK dataDir>/chs-constituents.json`.
+
+That file contains CHS Crown-copyright IP. It is the operator's own data, for
+personal, non-commercial use only — **do not redistribute it**, and it is
+**NOT FOR NAVIGATION**.
+
 ### Coverage and licensing
 
-Only **NOAA US stations** have bundled constituents — Canadian/CHS data is not
-included (licensing). Offline coverage is the US-Salish passes in the default gate
-list (Boundary Pass, Admiralty Inlet, etc.); CHS gates (Dodd Narrows, Gillard, Dent,
-Seymour, Arran, Porlier, Active, Beazley, Hole in the Wall) remain API-only.
+**NOAA US stations** have bundled constituents shipped in this repo — nothing CHS
+is shipped. **CHS gates get offline coverage only after the operator runs the
+local build** above, under their own CHS licence; until then they're API-only.
 
 ### Discrepancy log
 
