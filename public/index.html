@@ -22,14 +22,14 @@
     const log = document.getElementById('log');
     const go = document.getElementById('go');
     async function poll() {
-      const s = await (await fetch('build/status', { credentials: 'include' })).json();
+      const s = await (await fetch('/plugins/signalk-currents/status', { credentials: 'include' })).json();
       log.textContent = s.error ? ('failed: ' + s.error) : s.message;
       go.disabled = s.running;
       if (s.running) setTimeout(poll, 3000);
     }
     go.onclick = async () => {
       go.disabled = true; log.textContent = 'starting…';
-      const r = await fetch('build', { method: 'POST', credentials: 'include' });
+      const r = await fetch('/plugins/signalk-currents/build', { method: 'POST', credentials: 'include' });
       if (!r.ok) { log.textContent = 'start failed (' + r.status + ') — are you logged in as admin?'; go.disabled = false; return; }
       poll();
     };

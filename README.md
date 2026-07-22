@@ -167,11 +167,13 @@ Every reading carries two extra fields:
 | `source` | `"chs"` \| `"noaa"` \| `"harmonic"` | Where this prediction came from. |
 | `live` | `true` \| `false` | `false` when synthesized offline from constituents. |
 
-A station flagged `requiresLive: true` — from the plugin's committed `STRONG_GATES`
-set (`src/registry-stations.ts`: Seymour Narrows, Dent Rapids, Gillard Passage, Dodd
-Narrows, Active Pass, Beazley Passage, Hole in the Wall, Arran Rapids, Sechelt
-Rapids), not per-station config — is tagged `unreliableForTransit: true` whenever it
-is served harmonic-only. The harmonic model gives a reasonable baseline for
+A station flagged `requiresLive: true` is tagged `unreliableForTransit: true`
+whenever it is served harmonic-only. Every constricted CHS gate from the shared
+registry is flagged this way by default (`src/registry-stations.ts`); only the two
+open straits, Juan de Fuca East and Johnstone Strait Central, are exempt, since
+their current is advisory speed-made-good rather than a transit slack window. This
+is the safety-conservative default — a newly-added registry gate is flagged until
+confirmed to be an open strait. The harmonic model gives a reasonable baseline for
 planning, but constituent-derived slack timing at fast narrows can be off by tens of
 minutes. **Do not use a harmonic-only reading to time a transit of the rapids.**
 A deeper look at why harmonic predictions fall short at constricted passes will be

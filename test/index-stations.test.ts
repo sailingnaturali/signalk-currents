@@ -19,4 +19,10 @@ describe('effectiveStations', () => {
     expect(dodd).toHaveLength(1);
     expect(dodd[0].label).toBe('Dodd Narrows (mine)');
   });
+
+  it('includeChs=false skips the registry CHS gates entirely (non-BC operator)', () => {
+    const out = effectiveStations([NOAA], false);
+    expect(out).toEqual([NOAA]);
+    expect(out.some((s) => s.provider === 'chs')).toBe(false);
+  });
 });

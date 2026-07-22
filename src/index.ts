@@ -17,6 +17,7 @@ interface Options {
   stations?: StationConfig[];
   horizonDays?: number;
   pollMinutes?: number;
+  chsGates?: boolean;
 }
 
 export = function (app: ServerAPI): Plugin {
@@ -53,24 +54,29 @@ export = function (app: ServerAPI): Plugin {
         },
         horizonDays: { type: 'number', default: 3 },
         pollMinutes: { type: 'number', default: 60 },
+        chsGates: { type: 'boolean', default: true, title: 'Load Canadian (CHS) current gates from the shared registry (BC / Salish Sea)' },
       },
     },
 
     async start(options: Options) {
-      const stations = effectiveStations(options.stations ?? DEFAULT_STATIONS);
+      const stations = effectiveStations(options.stations ?? DEFAULT_STATIONS, options.chsGates ?? true);
       const horizonDays = options.horizonDays ?? 3;
       const pollMinutes = options.pollMinutes ?? 60;
 
       // Resolve each CHS gate's live IWLS id by name (used only to fetch; never
       // stored). Offline, resolution fails → those gates serve the harmonic
-      // fallback (once built). Re-resolved on each start.
-      try {
-        const liveIds = await resolveLiveIds();
-        for (const s of stations) {
-          if (s.provider === 'chs') s.liveId = liveIds.get(normalizeName(s.label));
+      // fallback (once built). Re-resolved on each start. Skipped entirely when
+      // there are no CHS stations (chsGates=false or a NOAA-only config) so such
+      // a config never hits IWLS.
+      if (stations.some((s) => s.provider === 'chs')) {
+        try {
+          const liveIds = await resolveLiveIds();
+          for (const s of stations) {
+            if (s.provider === 'chs') s.liveId = liveIds.get(normalizeName(s.label));
+          }
+        } catch (e) {
+          app.debug(`live CHS id resolution failed (offline?): ${(e as Error).message}`);
         }
-      } catch (e) {
-        app.debug(`live CHS id resolution failed (offline?): ${(e as Error).message}`);
       }
 
       // Load bundled + data-dir CHS constituents once; resolve discrepancy log path.

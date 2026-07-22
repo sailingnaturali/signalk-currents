@@ -545,7 +545,7 @@ Add to the `StationConfig` interface (after `ebbDirEstimated?`):
 
 Add `requiresLive: true` to these entries: Dodd Narrows, Active Pass, Porlier Pass, Gabriola Passage, Seymour Narrows, Beazley Passage, Hole in the Wall, Gillard Passage, Dent Rapids, Arran Rapids. (All the CHS narrows. Boundary Pass, the sole NOAA default, is not a strong-current transit gate — leave it unflagged.) Example:
 ```ts
-  { provider: 'chs', stationId: '63aef1866a2b9417c035030f', label: 'Dodd Narrows', lat: 49.1344, lon: -123.8171, requiresLive: true },
+  { provider: 'chs', stationId: '<24-hex-id>', label: 'Dodd Narrows', lat: 49.1344, lon: -123.8171, requiresLive: true },
 ```
 
 - [ ] **Step 5: Expose `requiresLive` in the plugin schema** (`src/index.ts`)

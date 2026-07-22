@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { registryChsStations, STRONG_GATES } from '../src/registry-stations';
+import { registryChsStations } from '../src/registry-stations';
 
 const DATA = {
   'chs-dodd-narrows': { name: 'Dodd Narrows', position: [49.13, -123.81], provider: 'chs' },
@@ -17,22 +17,25 @@ describe('registryChsStations', () => {
     expect(dodd.ebbDir).toBeUndefined();
   });
 
-  it('flags requiresLive from STRONG_GATES by label', () => {
+  it('flags requiresLive true for every constricted gate; exempts only the open straits', () => {
     const out = registryChsStations(DATA as never);
     const byLabel = Object.fromEntries(out.map((s) => [s.label, s]));
-    expect(byLabel['Dodd Narrows'].requiresLive).toBe(true);   // strong
-    expect(byLabel['Porlier Pass'].requiresLive).toBeUndefined(); // not strong
-  });
-
-  it('STRONG_GATES covers the known narrows', () => {
-    for (const g of ['Seymour Narrows', 'Dent Rapids', 'Gillard Passage', 'Dodd Narrows', 'Active Pass']) {
-      expect(STRONG_GATES.has(g)).toBe(true);
-    }
+    expect(byLabel['Dodd Narrows'].requiresLive).toBe(true);      // constricted
+    expect(byLabel['Porlier Pass'].requiresLive).toBe(true);      // constricted (flips under the new posture)
   });
 
   it('reads the real bundled registry (guards a silent rename)', async () => {
     const out = registryChsStations();
     expect(out.length).toBeGreaterThanOrEqual(19);
     expect(out.find((s) => s.label === 'Dodd Narrows')?.stationId).toBe('chs-dodd-narrows');
+  });
+
+  it('exempts the two open straits from requiresLive; a constricted gate stays flagged', () => {
+    const out = registryChsStations();
+    const byLabel = Object.fromEntries(out.map((s) => [s.label, s]));
+    expect(byLabel['Dodd Narrows'].requiresLive).toBe(true);
+    expect(byLabel['Porlier Pass'].requiresLive).toBe(true);
+    expect(byLabel['Juan de Fuca - East'].requiresLive).toBeUndefined();
+    expect(byLabel['Johnstone Strait - Central'].requiresLive).toBeUndefined();
   });
 });

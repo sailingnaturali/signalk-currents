@@ -1,14 +1,12 @@
 import registry from '@sailingnaturali/station-corrections/data/registry.json';
 import { StationConfig } from './types';
 
-// The plugin's transit-safety judgment (no upstream source publishes it): strong
-// passages where the offline harmonic model must not be trusted for a transit
-// decision. Matched by registry label. Formerly the per-station requiresLive flags
-// in defaults.ts, before the CHS gate list moved to the registry.
-export const STRONG_GATES = new Set<string>([
-  'Seymour Narrows', 'Dent Rapids', 'Gillard Passage', 'Dodd Narrows', 'Active Pass',
-  'Beazley Passage', 'Hole in the Wall', 'Arran Rapids', 'Sechelt Rapids',
-]);
+// Open-strait stations where the current is advisory (speed-made-good), not a
+// transit slack window — the ONLY CHS gates whose offline harmonic reading is not
+// flagged unreliableForTransit. Every other (constricted) gate is requiresLive:
+// the safety-conservative default, so a newly-added registry gate is flagged until
+// it's confirmed an open strait.
+export const OPEN_STRAITS = new Set<string>(['Juan de Fuca - East', 'Johnstone Strait - Central']);
 
 interface RegistryEntry { name: string; position: number[]; provider: string; }
 type RegistryData = Record<string, RegistryEntry>;
@@ -28,16 +26,18 @@ export function registryChsStations(data: RegistryData = registry as RegistryDat
       label: e.name,
       lat: e.position[0],
       lon: e.position[1],
-      requiresLive: STRONG_GATES.has(e.name) ? true : undefined,
+      requiresLive: OPEN_STRAITS.has(e.name) ? undefined : true,
     }));
 }
 
 // The effective station list: the config default (NOAA only) plus every CHS gate
-// from the shared registry. Config entries win on stationId collision, so an
-// operator can override a registry gate locally without editing the registry.
-export function effectiveStations(configStations: StationConfig[]): StationConfig[] {
+// from the shared registry (unless includeChs is false, for a non-BC operator who
+// wants to skip the registry gates + the IWLS fetch entirely). Config entries win
+// on stationId collision, so an operator can override a registry gate locally
+// without editing the registry.
+export function effectiveStations(configStations: StationConfig[], includeChs = true): StationConfig[] {
   const byId = new Map<string, StationConfig>();
-  for (const s of registryChsStations()) byId.set(s.stationId, s);
+  if (includeChs) for (const s of registryChsStations()) byId.set(s.stationId, s);
   for (const s of configStations) byId.set(s.stationId, s); // config overrides registry
   return [...byId.values()];
 }
