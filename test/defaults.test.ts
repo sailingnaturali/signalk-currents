@@ -2,47 +2,22 @@ import { describe, it, expect } from 'vitest';
 import { DEFAULT_STATIONS } from '../src/defaults';
 
 describe('DEFAULT_STATIONS', () => {
-  it('ships a non-empty default station list', () => {
-    expect(DEFAULT_STATIONS.length).toBeGreaterThan(0);
+  it('ships only NOAA — no committed CHS station data (licence invariant)', () => {
+    expect(DEFAULT_STATIONS.length).toBe(1);
+    expect(DEFAULT_STATIONS.every((s) => s.provider === 'noaa')).toBe(true);
   });
 
-  it('every station has the required fields with valid values', () => {
+  it('carries no CHS-shaped station ids', () => {
+    // CHS ids are 24-hex Mongo ids; none may be committed.
     for (const s of DEFAULT_STATIONS) {
-      expect(['chs', 'noaa']).toContain(s.provider);
-      expect(s.stationId).toBeTruthy();
-      expect(s.label).toBeTruthy();
-      expect(Number.isFinite(s.lat)).toBe(true);
-      expect(Number.isFinite(s.lon)).toBe(true);
+      expect(/^[0-9a-f]{24}$/.test(s.stationId)).toBe(false);
     }
   });
 
-  it('has no duplicate station ids', () => {
-    const ids = DEFAULT_STATIONS.map((s) => s.stationId);
-    expect(new Set(ids).size).toBe(ids.length);
-  });
-
-  it('NOAA stations carry a bin', () => {
-    for (const s of DEFAULT_STATIONS.filter((s) => s.provider === 'noaa')) {
-      expect(typeof s.noaaBin).toBe('number');
-    }
-  });
-
-  it('carries no hardcoded set directions (providers supply them at runtime)', () => {
-    // Both providers publish authoritative set directions — NOAA inline,
-    // CHS in station metadata — so defaults never bake in a flood/ebb value
-    // (which could go stale or, worse, be wrong). dirsSource stays 'api'.
-    for (const s of DEFAULT_STATIONS) {
-      expect(s.floodDir).toBeUndefined();
-      expect(s.ebbDir).toBeUndefined();
-    }
-  });
-});
-
-describe('choke-point flags', () => {
-  it('marks the strong narrows requiresLive', () => {
-    const byLabel = Object.fromEntries(DEFAULT_STATIONS.map((s) => [s.label, s]));
-    for (const label of ['Seymour Narrows', 'Dent Rapids', 'Gillard Passage', 'Dodd Narrows', 'Active Pass']) {
-      expect(byLabel[label]?.requiresLive, `${label} should require live`).toBe(true);
-    }
+  it('the NOAA station carries a bin and no baked-in set directions', () => {
+    const noaa = DEFAULT_STATIONS[0];
+    expect(typeof noaa.noaaBin).toBe('number');
+    expect(noaa.floodDir).toBeUndefined();
+    expect(noaa.ebbDir).toBeUndefined();
   });
 });
