@@ -11,14 +11,50 @@ export interface HarmonicDb { generated: string; source: string; stations: Recor
 
 let cached: HarmonicDb | undefined;
 
+interface ChsBundleStation {
+  id: string; name: string; floodDirection: number; ebbDirection: number; offset: number;
+  constituents: { name: string; amplitude: number; phase: number }[];
+}
+
+// Adapt a chs-constituents bundle (built locally by the operator) into the plugin's
+// HarmonicStation shape, keyed by the station's registry key (its `id`). Different
+// field names, same content: floodDirection→floodDir, offset→z0Kn (mean flow),
+// amplitude→amplitudeKn, phase→phaseDeg.
+export function adaptChsBundle(bundle: unknown): Record<string, HarmonicStation> {
+  const stations = (bundle as { stations?: ChsBundleStation[] }).stations ?? [];
+  const out: Record<string, HarmonicStation> = {};
+  for (const s of stations) {
+    out[s.id] = {
+      floodDir: s.floodDirection,
+      ebbDir: s.ebbDirection,
+      z0Kn: s.offset,
+      constituents: s.constituents.map((c) => ({ name: c.name, amplitudeKn: c.amplitude, phaseDeg: c.phase })),
+    };
+  }
+  return out;
+}
+
 // Loads the bundled NOAA constituent DB. dist/ sits one level below the repo
 // root alongside data/, and so does src/ during tests — resolve relative to
 // the repo root (two up from this file's dir) with a fallback for both layouts.
-export function loadHarmonicDb(file?: string): HarmonicDb {
-  if (!file && cached) return cached;
+// When chsBundlePath is given and readable, merges a locally-built CHS bundle
+// (from the data dir) in, keyed by registry key. A missing/unreadable CHS
+// bundle is a no-op — NOAA-only is a valid state (the operator hasn't built one yet).
+export function loadHarmonicDb(file?: string, chsBundlePath?: string): HarmonicDb {
+  if (!file && !chsBundlePath && cached) return cached;
   const path = file ?? join(__dirname, '..', '..', 'data', 'harmonic-constituents.json');
   const db = JSON.parse(readFileSync(path, 'utf8')) as HarmonicDb;
-  if (!file) cached = db;
+
+  if (chsBundlePath) {
+    try {
+      const chs = adaptChsBundle(JSON.parse(readFileSync(chsBundlePath, 'utf8')));
+      db.stations = { ...db.stations, ...chs };
+    } catch {
+      // No built CHS bundle yet (or unreadable) — NOAA-only is a valid state.
+    }
+  }
+
+  if (!file && !chsBundlePath) cached = db;
   return db;
 }
 
