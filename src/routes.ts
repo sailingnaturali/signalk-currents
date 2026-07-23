@@ -6,6 +6,9 @@ export interface StationSeries {
   dirsSource?: DirsSource;
   source: CurrentSource;
   live: boolean;
+  // A derived gate (Malibu Rapids): slack TIMING only, no speed and no flood/ebb
+  // axis. Consumers must present slack windows, never a current vector.
+  derived?: boolean;
 }
 
 // The payload served by the `currents` resource provider (registered in
@@ -24,6 +27,7 @@ export function currentsPayload(series: Map<string, StationSeries>) {
       source: s.source,
       live: s.live,
       unreliableForTransit: s.station.requiresLive === true && !s.live,
+      derived: s.derived,
       events: s.events,
     })),
   };

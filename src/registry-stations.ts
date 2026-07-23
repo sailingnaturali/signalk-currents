@@ -8,8 +8,31 @@ import { StationConfig } from './types';
 // it's confirmed an open strait.
 export const OPEN_STRAITS = new Set<string>(['Juan de Fuca - East', 'Johnstone Strait - Central']);
 
-interface RegistryEntry { name: string; position: number[]; provider: string; derived?: unknown; }
+interface DerivedBlock { reference: string; hwLagMinutes: number; lwLagMinutes: number; }
+interface RegistryEntry { name: string; position: number[]; provider: string; derived?: DerivedBlock; }
 type RegistryData = Record<string, RegistryEntry>;
+
+export interface DerivedGateConfig {
+  stationId: string; label: string; lat: number; lon: number;
+  reference: string; hwLagMinutes: number; lwLagMinutes: number;
+}
+
+/**
+ * The derived CHS gates (Malibu Rapids): passes with no current station of their
+ * own, served from a reference tide port's HW/LW + lags. Kept separate from
+ * registryChsStations because they have no live source and never carry a current
+ * vector — a distinct pass in the plugin serves their slack timing to /currents only.
+ */
+export function registryDerivedGates(data: RegistryData = registry as RegistryData): DerivedGateConfig[] {
+  return Object.entries(data)
+    .filter(([, e]) => e.provider === 'chs' && e.derived !== undefined)
+    .map(([key, e]) => ({
+      stationId: key, label: e.name, lat: e.position[0], lon: e.position[1],
+      reference: e.derived!.reference,
+      hwLagMinutes: e.derived!.hwLagMinutes,
+      lwLagMinutes: e.derived!.lwLagMinutes,
+    }));
+}
 
 /**
  * The CHS gate list, sourced from the shared registry by name/key — NEVER from a

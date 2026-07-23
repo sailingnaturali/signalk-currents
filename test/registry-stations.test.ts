@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { registryChsStations } from '../src/registry-stations';
+import { registryChsStations, registryDerivedGates } from '../src/registry-stations';
 
 const DATA = {
   'chs-dodd-narrows': { name: 'Dodd Narrows', position: [49.13, -123.81], provider: 'chs' },
@@ -11,6 +11,21 @@ const DATA = {
     kind: 'current', derived: { reference: 'chs-point-atkinson', hwLagMinutes: 25, lwLagMinutes: 35 },
   },
 };
+
+describe('registryDerivedGates', () => {
+  it('emits a config per derived gate, carrying its reference port and lags', () => {
+    expect(registryDerivedGates(DATA as never)).toEqual([
+      {
+        stationId: 'chs-malibu-rapids', label: 'Malibu Rapids', lat: 50.16, lon: -123.85,
+        reference: 'chs-point-atkinson', hwLagMinutes: 25, lwLagMinutes: 35,
+      },
+    ]);
+  });
+
+  it('is empty when no gate is derived', () => {
+    expect(registryDerivedGates({ 'chs-dodd-narrows': DATA['chs-dodd-narrows'] } as never)).toEqual([]);
+  });
+});
 
 describe('registryChsStations', () => {
   it('emits a StationConfig per CHS gate, keyed by the registry key, NOAA and derived gates excluded', () => {

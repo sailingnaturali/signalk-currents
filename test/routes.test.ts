@@ -65,4 +65,16 @@ describe('provenance in /currents payload', () => {
     const p: any = currentsPayload(new Map([['a', s]]));
     expect(p.stations[0].unreliableForTransit).toBe(false);
   });
+
+  it('marks a derived gate so consumers know it is slack-timing only, no speed vector', () => {
+    const s = base({
+      station: { provider: 'chs', stationId: 'chs-malibu-rapids', label: 'Malibu Rapids', lat: 50.16, lon: -123.85 },
+      events: [{ utc: '2026-03-11T05:30:00.000Z', kind: 'slack', speedKn: 0 }],
+      source: 'harmonic', live: false, derived: true,
+    });
+    const p: any = currentsPayload(new Map([['a', s]]));
+    expect(p.stations[0].derived).toBe(true);
+    expect(p.stations[0].floodDir).toBeUndefined();
+    expect(p.stations[0].ebbDir).toBeUndefined();
+  });
 });

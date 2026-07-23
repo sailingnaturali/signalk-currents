@@ -12,16 +12,43 @@ const CHS_BUNDLE = {
       floodDirection: 130, ebbDirection: 310, offset: -0.2,
       constituents: [{ name: 'M2', amplitude: 2.1, phase: 45 }, { name: 'K1', amplitude: 0.8, phase: 200 }],
     },
+    // A derived gate's reference tide port (water level) and the gate itself.
+    {
+      id: 'chs-point-atkinson', name: 'Point Atkinson', type: 'tide-harmonic', source: 'chs-derived',
+      offset: 3.0, constituents: [{ name: 'M2', amplitude: 0.95, phase: 40 }, { name: 'K1', amplitude: 0.85, phase: 250 }],
+    },
+    {
+      id: 'chs-malibu-rapids', name: 'Malibu Rapids', type: 'derived-slack', source: 'tide-derived',
+      reference: 'chs-point-atkinson', hwLagMinutes: 25, lwLagMinutes: 35,
+    },
   ],
 };
 
 describe('adaptChsBundle', () => {
-  it('maps the CHS field names into HarmonicStation, keyed by registry key', () => {
+  it('maps CHS current field names into HarmonicStation, keyed by registry key', () => {
     const out = adaptChsBundle(CHS_BUNDLE);
-    expect(out['chs-dodd-narrows']).toEqual({
+    expect(out.stations['chs-dodd-narrows']).toEqual({
       floodDir: 130, ebbDir: 310, z0Kn: -0.2,
       constituents: [{ name: 'M2', amplitudeKn: 2.1, phaseDeg: 45 }, { name: 'K1', amplitudeKn: 0.8, phaseDeg: 200 }],
     });
+  });
+
+  it('carries a tide-harmonic reference port as a water-level station (no flood/ebb)', () => {
+    const out = adaptChsBundle(CHS_BUNDLE);
+    expect(out.tides['chs-point-atkinson']).toEqual({
+      z0M: 3.0,
+      constituents: [{ name: 'M2', amplitudeKn: 0.95, phaseDeg: 40 }, { name: 'K1', amplitudeKn: 0.85, phaseDeg: 250 }],
+    });
+    // A tide reference is not a current station.
+    expect(out.stations['chs-point-atkinson']).toBeUndefined();
+  });
+
+  it('carries a derived-slack gate as a reference + lags (no constituents, no axis)', () => {
+    const out = adaptChsBundle(CHS_BUNDLE);
+    expect(out.derived['chs-malibu-rapids']).toEqual({
+      reference: 'chs-point-atkinson', hwLagMinutes: 25, lwLagMinutes: 35,
+    });
+    expect(out.stations['chs-malibu-rapids']).toBeUndefined();
   });
 });
 

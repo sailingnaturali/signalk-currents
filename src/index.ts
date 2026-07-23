@@ -6,10 +6,10 @@ import { createCache, DayCache } from './cache';
 import { stationData, DayData } from './fetch';
 import { nearestStation, interpolateCurrent } from './calculations';
 import { currentsPayload, StationSeries } from './routes';
-import { loadHarmonicDb, harmonicStationFor, synthesizeHorizon } from './sources/harmonic';
+import { loadHarmonicDb, harmonicStationFor, synthesizeHorizon, derivedGateFor, tideStationFor, synthesizeDerivedHorizon } from './sources/harmonic';
 import { selectData } from './select';
 import { computeDiscrepancy, appendDiscrepancy } from './compare';
-import { effectiveStations } from './registry-stations';
+import { effectiveStations, registryDerivedGates, DerivedGateConfig } from './registry-stations';
 import { resolveLiveIds, normalizeName } from './sources/iwls-index';
 import { runBuild, buildStatus } from './build-action';
 
@@ -60,6 +60,10 @@ export = function (app: ServerAPI): Plugin {
 
     async start(options: Options) {
       const stations = effectiveStations(options.stations ?? DEFAULT_STATIONS, options.chsGates ?? true);
+      // Derived gates (Malibu Rapids) have no current station and no live source —
+      // they're served separately from the reference tide port + lags, slack timing
+      // only, and never enter the environment.current path. Loaded only with CHS on.
+      const derivedGates: DerivedGateConfig[] = (options.chsGates ?? true) ? registryDerivedGates() : [];
       const horizonDays = options.horizonDays ?? 3;
       const pollMinutes = options.pollMinutes ?? 60;
 
@@ -137,6 +141,24 @@ export = function (app: ServerAPI): Plugin {
               dirsSource: dirsSource(station, sel.data),
               source: sel.source,
               live: sel.live,
+            });
+          }
+
+          // Derived gates: predict the reference tide port's HW/LW and shift by the
+          // lags to slack timing. Served to /currents only (never environment.current:
+          // a derived gate has NO speed vector). Silent until the CHS bundle carrying
+          // the reference tide fit has been built.
+          for (const gate of derivedGates) {
+            const spec = derivedGateFor(harmonicDb, gate.stationId);
+            const tide = spec ? tideStationFor(harmonicDb, spec.reference) : undefined;
+            if (!spec || !tide) continue;
+            const data = synthesizeDerivedHorizon(spec, tide, now, horizonDays);
+            series.set(gate.stationId, {
+              station: { provider: 'chs', stationId: gate.stationId, label: gate.label, lat: gate.lat, lon: gate.lon },
+              events: data.events,
+              source: 'harmonic',
+              live: false,
+              derived: true,
             });
           }
 
