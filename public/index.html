@@ -3,21 +3,57 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Currents — build offline CHS models</title>
+  <title>Currents — build offline predictions</title>
   <style>
-    body { font: 15px/1.5 system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; }
-    button { font-size: 1rem; padding: 0.5rem 1rem; }
-    #log { white-space: pre-wrap; background: #f4f4f4; padding: 0.75rem; border-radius: 6px; margin-top: 1rem; min-height: 3rem; }
-    .note { color: #555; font-size: 0.85rem; }
+    body { font: 15px/1.6 system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; }
+    h1 { line-height: 1.2; }
+    ol { padding-left: 1.2rem; }
+    button { font-size: 1rem; padding: 0.6rem 1.2rem; }
+    button:disabled { opacity: 0.5; }
+    .action { margin: 1.5rem 0; padding: 1.25rem; border: 1px solid #ddd; border-radius: 10px; }
+    #log { white-space: pre-wrap; font: 0.9rem ui-monospace, monospace; background: #f4f4f4; padding: 0.75rem; border-radius: 6px; margin-top: 1rem; min-height: 3rem; }
+    .details { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #ddd; color: #444; }
+    .details h2 { font-size: 1.05rem; margin-bottom: 0.3rem; }
+    .note { color: #666; font-size: 0.9rem; }
   </style>
 </head>
 <body>
-  <h1>Offline CHS current models</h1>
-  <p>Fetches every live CHS current station and fits harmonic models on this machine,
-     under your own CHS licence, for offline Canadian current prediction. Runs ~30 minutes.</p>
-  <p class="note">Output stays on this server and must not be redistributed (Crown copyright, not for navigation).</p>
-  <button id="go">Build offline models</button>
-  <div id="log">idle</div>
+  <h1>Build offline current predictions</h1>
+
+  <p>The Currents plugin can show tidal current speed and direction for Canadian
+     waters — but the live source needs an internet connection. This page builds
+     a local copy so it keeps working offline, out where there's no signal.</p>
+
+  <p><strong>When you press the button:</strong></p>
+  <ol>
+    <li>It downloads several months of official current predictions for every
+        Canadian current station.</li>
+    <li>It fits a small prediction model for each one, right here on this server.</li>
+    <li>From then on, the plugin predicts Canadian currents with no internet needed.</li>
+  </ol>
+
+  <p>This takes <strong>2–3 hours</strong> and only needs to be done once (re-run
+     it now and then to refresh). You can close this page — the build keeps
+     running. Progress shows below.</p>
+
+  <div class="action">
+    <button id="go">Build offline predictions</button>
+    <div id="log">idle</div>
+  </div>
+
+  <section class="details">
+    <h2>Where the data comes from</h2>
+    <p>The predictions are published by the <strong>Canadian Hydrographic Service
+       (CHS)</strong> — the government agency responsible for Canada's official
+       tide and current data. Building the model here means the plugin doesn't
+       have to reach their servers every time you want a reading.</p>
+
+    <h2>Licence &amp; limits</h2>
+    <p class="note">The models are built under your own personal, non-commercial
+       CHS licence and stay on this server — please don't redistribute them, as
+       they contain Crown-copyright data. Not for navigation.</p>
+  </section>
+
   <script>
     const log = document.getElementById('log');
     const go = document.getElementById('go');
