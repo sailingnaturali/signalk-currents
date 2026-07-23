@@ -1,6 +1,6 @@
 {
   "name": "@sailingnaturali/signalk-currents",
-  "version": "0.9.3",
+  "version": "0.10.0",
   "description": "Publish CHS/NOAA tidal-current predictions to SignalK — environment.current + a /currents resource, for a configured station list.",
   "main": "dist/index.js",
   "scripts": {
@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@neaps/tide-predictor": "^0.10.0",
-    "@sailingnaturali/chs-constituents": "^0.1.0",
+    "@sailingnaturali/chs-constituents": "^0.2.0",
     "@sailingnaturali/current-stations": "^0.1.0",
     "@sailingnaturali/station-corrections": "^2.3.0",
     "@signalk/server-api": "^2.0.0",
