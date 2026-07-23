@@ -8,7 +8,7 @@ import { StationConfig } from './types';
 // it's confirmed an open strait.
 export const OPEN_STRAITS = new Set<string>(['Juan de Fuca - East', 'Johnstone Strait - Central']);
 
-interface RegistryEntry { name: string; position: number[]; provider: string; }
+interface RegistryEntry { name: string; position: number[]; provider: string; derived?: unknown; }
 type RegistryData = Record<string, RegistryEntry>;
 
 /**
@@ -19,7 +19,12 @@ type RegistryData = Record<string, RegistryEntry>;
  */
 export function registryChsStations(data: RegistryData = registry as RegistryData): StationConfig[] {
   return Object.entries(data)
-    .filter(([, e]) => e.provider === 'chs')
+    // Skip derived gates (e.g. Malibu Rapids). CHS publishes no current station
+    // for them, so there's no live IWLS id to resolve and nothing for
+    // chs-constituents to fit — including one just throws "no live id" every
+    // cycle. Their slack derives from a reference tide port; serving that is
+    // Phase 2 (see station-corrections' `derived` block). Until then, not our data.
+    .filter(([, e]) => e.provider === 'chs' && e.derived === undefined)
     .map(([key, e]) => ({
       provider: 'chs' as const,
       stationId: key,
