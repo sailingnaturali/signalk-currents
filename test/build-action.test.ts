@@ -7,6 +7,19 @@ import { runBuild, buildStatus } from '../src/build-action';
 function flush() { return new Promise((r) => setTimeout(r, 10)); }
 
 describe('runBuild', () => {
+  it('writes atomically — no .tmp file left behind on success', async () => {
+    const dataDir = mkdtempSync(join(tmpdir(), 'ba-'));
+    runBuild({
+      dataDir,
+      buildBundleFn: async () => ({ note: 'x', stations: [] }),
+      onProgress: () => {},
+      onDone: () => {},
+    });
+    await flush();
+    expect(existsSync(join(dataDir, 'chs-constituents.json'))).toBe(true);
+    expect(existsSync(join(dataDir, 'chs-constituents.json.tmp'))).toBe(false);
+  });
+
   it('writes the returned bundle to the data dir and reports done', async () => {
     const dataDir = mkdtempSync(join(tmpdir(), 'ba-'));
     const bundle = { note: 'NOT FOR NAVIGATION', stations: [{ id: 'chs-x' }] };

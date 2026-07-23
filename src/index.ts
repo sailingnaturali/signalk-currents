@@ -81,7 +81,9 @@ export = function (app: ServerAPI): Plugin {
 
       // Load bundled + data-dir CHS constituents once; resolve discrepancy log path.
       chsBundlePath = join(app.getDataDirPath(), 'chs-constituents.json');
-      harmonicDb = loadHarmonicDb(undefined, chsBundlePath);
+      harmonicDb = loadHarmonicDb(undefined, chsBundlePath, (e) =>
+        app.error(`CHS harmonic bundle load failed (serving NOAA-only): ${e.message}`),
+      );
       const discrepancyLog = join(app.getDataDirPath(), 'signalk-currents-discrepancies.jsonl');
 
       // Expose the per-station series as a SignalK resource — served at
@@ -216,7 +218,10 @@ export = function (app: ServerAPI): Plugin {
         runBuild({
           dataDir: app.getDataDirPath(),
           onProgress: (m) => app.setPluginStatus(`offline build: ${m}`),
-          onDone: () => { harmonicDb = loadHarmonicDb(undefined, chsBundlePath); }, // hot-reload
+          onDone: () => { // hot-reload the just-built bundle; report a corrupt one
+            harmonicDb = loadHarmonicDb(undefined, chsBundlePath, (e) =>
+              app.error(`CHS harmonic bundle reload failed (serving NOAA-only): ${e.message}`));
+          },
         });
         res.status(202).json(buildStatus());
       });

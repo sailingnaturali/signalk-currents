@@ -1,4 +1,4 @@
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, rename } from 'fs/promises';
 import { join } from 'path';
 
 // tsc (module: CommonJS) rewrites a plain import() to require(), which cannot load
@@ -40,7 +40,12 @@ export function runBuild(deps: BuildDeps): void {
     });
 
     await mkdir(deps.dataDir, { recursive: true });
-    await writeFile(join(deps.dataDir, 'chs-constituents.json'), JSON.stringify(bundle, null, 2));
+    // Write to a temp file then rename — atomic on the same filesystem, so a crash
+    // mid-write can't leave a half-written bundle that loadHarmonicDb then rejects.
+    const finalPath = join(deps.dataDir, 'chs-constituents.json');
+    const tmpPath = `${finalPath}.tmp`;
+    await writeFile(tmpPath, JSON.stringify(bundle, null, 2));
+    await rename(tmpPath, finalPath);
     state = { running: false, message: `built ${(bundle.stations as unknown[]).length} stations` };
     deps.onDone();
   })().catch((e) => {

@@ -41,3 +41,39 @@ describe('loadHarmonicDb merge', () => {
     expect(harmonicStationFor(db, 'chs-dodd-narrows')).toBeUndefined();
   });
 });
+
+describe('adaptChsBundle validation', () => {
+  it('throws when a station is missing its constituents', () => {
+    const bad = { stations: [{ id: 'chs-x', floodDirection: 100, ebbDirection: 280, offset: 0 }] };
+    expect(() => adaptChsBundle(bad)).toThrow(/malformed/);
+  });
+
+  it('throws when there is no stations array', () => {
+    expect(() => adaptChsBundle({})).toThrow(/no stations array/);
+  });
+
+  it('throws on a malformed constituent (non-numeric amplitude)', () => {
+    const bad = { stations: [{ id: 'chs-x', floodDirection: 100, ebbDirection: 280, offset: 0, constituents: [{ name: 'M2', amplitude: 'oops', phase: 45 }] }] };
+    expect(() => adaptChsBundle(bad)).toThrow(/malformed constituent/);
+  });
+});
+
+describe('loadHarmonicDb error handling', () => {
+  it('surfaces onError for a present-but-corrupt CHS bundle, still serving NOAA-only', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'chsbad-'));
+    const chsPath = join(dir, 'chs-constituents.json');
+    writeFileSync(chsPath, '{ this is not valid json');
+    const errors: Error[] = [];
+    const db = loadHarmonicDb(undefined, chsPath, (e) => errors.push(e));
+    expect(errors).toHaveLength(1);                             // corrupt build reported
+    expect(harmonicStationFor(db, 'PUG1717')).toBeDefined();    // NOAA still served
+    expect(harmonicStationFor(db, 'chs-dodd-narrows')).toBeUndefined();
+  });
+
+  it('does NOT call onError for a missing CHS bundle (a valid NOAA-only state)', () => {
+    const errors: Error[] = [];
+    const db = loadHarmonicDb(undefined, join(tmpdir(), 'nope-does-not-exist.json'), (e) => errors.push(e));
+    expect(errors).toHaveLength(0);
+    expect(harmonicStationFor(db, 'PUG1717')).toBeDefined();
+  });
+});

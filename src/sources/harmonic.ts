@@ -21,14 +21,31 @@ interface ChsBundleStation {
 // field names, same content: floodDirection→floodDir, offset→z0Kn (mean flow),
 // amplitude→amplitudeKn, phase→phaseDeg.
 export function adaptChsBundle(bundle: unknown): Record<string, HarmonicStation> {
-  const stations = (bundle as { stations?: ChsBundleStation[] }).stations ?? [];
+  const stations = (bundle as { stations?: unknown }).stations;
+  if (!Array.isArray(stations)) {
+    throw new Error('CHS bundle has no stations array');
+  }
   const out: Record<string, HarmonicStation> = {};
-  for (const s of stations) {
+  for (const s of stations as ChsBundleStation[]) {
+    if (
+      typeof s?.id !== 'string' ||
+      typeof s.floodDirection !== 'number' ||
+      typeof s.ebbDirection !== 'number' ||
+      typeof s.offset !== 'number' ||
+      !Array.isArray(s.constituents)
+    ) {
+      throw new Error(`CHS bundle station ${JSON.stringify(s?.id)} is malformed`);
+    }
     out[s.id] = {
       floodDir: s.floodDirection,
       ebbDir: s.ebbDirection,
       z0Kn: s.offset,
-      constituents: s.constituents.map((c) => ({ name: c.name, amplitudeKn: c.amplitude, phaseDeg: c.phase })),
+      constituents: s.constituents.map((c) => {
+        if (typeof c?.name !== 'string' || typeof c?.amplitude !== 'number' || typeof c?.phase !== 'number') {
+          throw new Error(`CHS bundle station ${s.id} has a malformed constituent`);
+        }
+        return { name: c.name, amplitudeKn: c.amplitude, phaseDeg: c.phase };
+      }),
     };
   }
   return out;
@@ -40,7 +57,11 @@ export function adaptChsBundle(bundle: unknown): Record<string, HarmonicStation>
 // When chsBundlePath is given and readable, merges a locally-built CHS bundle
 // (from the data dir) in, keyed by registry key. A missing/unreadable CHS
 // bundle is a no-op — NOAA-only is a valid state (the operator hasn't built one yet).
-export function loadHarmonicDb(file?: string, chsBundlePath?: string): HarmonicDb {
+export function loadHarmonicDb(
+  file?: string,
+  chsBundlePath?: string,
+  onError?: (e: Error) => void,
+): HarmonicDb {
   if (!file && !chsBundlePath && cached) return cached;
   const path = file ?? join(__dirname, '..', '..', 'data', 'harmonic-constituents.json');
   const db = JSON.parse(readFileSync(path, 'utf8')) as HarmonicDb;
@@ -49,8 +70,14 @@ export function loadHarmonicDb(file?: string, chsBundlePath?: string): HarmonicD
     try {
       const chs = adaptChsBundle(JSON.parse(readFileSync(chsBundlePath, 'utf8')));
       db.stations = { ...db.stations, ...chs };
-    } catch {
-      // No built CHS bundle yet (or unreadable) — NOAA-only is a valid state.
+    } catch (e) {
+      // A missing file is a valid NOAA-only state — the operator hasn't built a
+      // CHS bundle yet. But a file that exists and won't parse/validate is a
+      // corrupt build: degrade to NOAA-only, but surface it so the operator isn't
+      // left silently thinking their 30-minute build worked.
+      if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
+        onError?.(e as Error);
+      }
     }
   }
 
