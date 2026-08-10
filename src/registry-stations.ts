@@ -58,7 +58,12 @@ export function registryChsStations(data: RegistryData = registry as RegistryDat
     // resolveLiveIds finds nothing and every one threw "no live id for <port>" on
     // every poll cycle — ten of them on the boat Pi, 2026-08-10. Harmless (the
     // station is dropped) but it burns a fetch attempt and buries real errors.
-    .filter(([, e]) => e.provider === 'chs' && e.derived === undefined && e.kind !== 'tide')
+    //
+    // Allowlist, not `!== 'tide'`: this bug WAS the registry growing a kind we
+    // didn't anticipate, and a denylist re-acquires it the next time that happens.
+    // Absent kind means current. Matches chs-constituents' overlay filter.
+    .filter(([, e]) => e.provider === 'chs' && e.derived === undefined
+      && (e.kind === undefined || e.kind === 'current'))
     .map(([key, e]) => ({
       provider: 'chs' as const,
       stationId: key,

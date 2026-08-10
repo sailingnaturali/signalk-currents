@@ -51,6 +51,14 @@ describe('registryChsStations', () => {
     expect(out.find((s) => s.label === 'Victoria')).toBeUndefined();
   });
 
+  // The filter is an allowlist for exactly this reason: the bug above WAS the
+  // registry growing a kind this repo had never seen. A `!== 'tide'` denylist
+  // re-acquires it the next time that happens.
+  it('skips a kind it has never seen, rather than assuming it is a gate', () => {
+    const future = { 'chs-somewhere': { name: 'Somewhere', position: [49, -123], provider: 'chs', kind: 'wave' } };
+    expect(registryChsStations(future as never)).toEqual([]);
+  });
+
   it('flags requiresLive true for every constricted gate; exempts only the open straits', () => {
     const out = registryChsStations(DATA as never);
     const byLabel = Object.fromEntries(out.map((s) => [s.label, s]));
