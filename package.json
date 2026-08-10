@@ -1,6 +1,6 @@
 {
   "name": "@sailingnaturali/signalk-currents",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "Tidal current speed and direction for the vessel's position.",
   "main": "dist/index.js",
   "scripts": {
