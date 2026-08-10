@@ -10,7 +10,14 @@ export async function fetchNoaaEvents(
   stationId: string, bin: number, start: Date, end: Date,
   fetchFn: typeof fetch = fetch,
 ): Promise<NoaaDayData> {
-  const rows = await fetchCurrentPredictions(stationId, bin, start, end, {
+  // `end` is EXCLUSIVE — callers pass the next day's 00:00Z (fetch.ts). The CO-OPS
+  // client sends begin_date/end_date as bare YMD, which the API reads inclusively, so
+  // passing it through asks for the day AND its successor. Over a multi-day horizon
+  // those windows overlap and the caller concatenates the overlap: Boundary Pass
+  // served 48 events for a 3-day horizon, 16 of them duplicates, which surfaced to
+  // agents as the same slack time listed twice. Step back inside the window.
+  const lastInstant = new Date(end.getTime() - 1);
+  const rows = await fetchCurrentPredictions(stationId, bin, start, lastInstant, {
     fetchFn, paceMs: 0, application: 'signalk-currents',
   });
 

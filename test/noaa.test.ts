@@ -33,3 +33,19 @@ describe('fetchNoaaEvents', () => {
     expect(r.ebbDir).toBeUndefined();
   });
 });
+
+// Regression: the NOAA client formats begin_date/end_date as YMD dates, so an
+// exclusive end instant (dayStart + 24h) reads as an INCLUSIVE next day and every
+// request pulls two days. Across a multi-day horizon the windows overlap and
+// stationData concatenates the overlap into duplicate events — 48 events for a
+// 3-day horizon at Boundary Pass, 16 of them duplicated. Observed live 2026-08-10.
+describe('fetchNoaaEvents day window', () => {
+  it('requests a single UTC day, not the day plus its successor', async () => {
+    let url = '';
+    const spy = async (u: any) => { url = String(u); return { ok: true, json: async () => sample } as any; };
+    await fetchNoaaEvents('PUG1717', 35, day[0], day[1], spy);
+    const q = new URL(url).searchParams;
+    expect(q.get('begin_date')).toBe('20260606');
+    expect(q.get('end_date')).toBe('20260606');
+  });
+});

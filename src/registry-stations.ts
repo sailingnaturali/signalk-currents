@@ -64,8 +64,24 @@ export function registryChsStations(data: RegistryData = registry as RegistryDat
 // on stationId collision, so an operator can override a registry gate locally
 // without editing the registry.
 export function effectiveStations(configStations: StationConfig[], includeChs = true): StationConfig[] {
+  const registryStations = includeChs ? registryChsStations() : [];
+  // A config written before registry 2.0.0 still names a gate by its provider-minted
+  // CHS id (a UUID). That never collides with the registry's slug, so the same gate
+  // was served twice and the stale id resolved no live id either — 19 duplicated gates
+  // on the boat Pi, invisible because consumers key on label and silently drop one.
+  // Re-key such an entry onto the registry slug so it lands as the OVERRIDE it was
+  // always meant to be: the slug is what resolveLiveIds works from, and every other
+  // field the operator set (set directions, estimate flags, bins) rides along.
+  // Deliberately keyed on label, not position: renaming a station is the registry's
+  // job and downstream is supposed to follow it.
+  const registryByLabel = new Map(registryStations.map((s) => [s.label.trim().toLowerCase(), s]));
+
   const byId = new Map<string, StationConfig>();
-  if (includeChs) for (const s of registryChsStations()) byId.set(s.stationId, s);
-  for (const s of configStations) byId.set(s.stationId, s); // config overrides registry
+  for (const s of registryStations) byId.set(s.stationId, s);
+  for (const s of configStations) {                          // config overrides registry
+    const gate = registryByLabel.get(s.label.trim().toLowerCase());
+    const keyed = gate && gate.stationId !== s.stationId ? { ...s, stationId: gate.stationId } : s;
+    byId.set(keyed.stationId, keyed);
+  }
   return [...byId.values()];
 }

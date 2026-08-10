@@ -25,4 +25,22 @@ describe('effectiveStations', () => {
     expect(out).toEqual([NOAA]);
     expect(out.some((s) => s.provider === 'chs')).toBe(false);
   });
+
+  // Regression: a config written before station-corrections 2.0.0 still carries the
+  // provider-minted CHS id (a UUID). That does not collide with the registry's slug,
+  // so the same gate was served TWICE — 19 duplicated gates on the boat Pi, observed
+  // 2026-08-10 — and the stale UUID resolves no live id either. Same gate, one entry:
+  // the registry key is what resolveLiveIds works from, so it supplies identity while
+  // the operator's own set directions survive.
+  it('collapses a config entry that names a registry gate under a stale id', () => {
+    const stale: StationConfig = {
+      provider: 'chs', stationId: '63aef1866a2b9417c035030f', label: 'Dodd Narrows',
+      lat: 49.13, lon: -123.81, floodDir: 355, ebbDir: 155,
+    };
+    const out = effectiveStations([NOAA, stale]);
+    const dodd = out.filter((s) => s.label === 'Dodd Narrows');
+    expect(dodd).toHaveLength(1);
+    expect(dodd[0].stationId).toBe('chs-dodd-narrows');
+    expect(dodd[0].floodDir).toBe(355);
+  });
 });
