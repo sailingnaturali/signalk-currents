@@ -1,4 +1,5 @@
 import registry from '@sailingnaturali/station-corrections/data/registry.json';
+import { currentGates } from '@sailingnaturali/station-corrections';
 import { StationConfig } from './types';
 
 // Open-strait stations where the current is advisory (speed-made-good), not a
@@ -46,24 +47,17 @@ export function registryDerivedGates(data: RegistryData = registry as RegistryDa
  * separately at runtime (see resolveLiveIds) and set on `liveId`.
  */
 export function registryChsStations(data: RegistryData = registry as RegistryData): StationConfig[] {
-  return Object.entries(data)
-    // Skip derived gates (e.g. Malibu Rapids). CHS publishes no current station
-    // for them, so there's no live IWLS id to resolve and nothing for
-    // chs-constituents to fit — including one just throws "no live id" every
-    // cycle. Their slack derives from a reference tide port; serving that is
-    // Phase 2 (see station-corrections' `derived` block). Until then, not our data.
-    //
-    // Skip tide reference ports too (station-corrections 2.3.0+ carries them so a
-    // gate can name its companion port). They publish no wcsp1 current series, so
-    // resolveLiveIds finds nothing and every one threw "no live id for <port>" on
-    // every poll cycle — ten of them on the boat Pi, 2026-08-10. Harmless (the
-    // station is dropped) but it burns a fetch attempt and buries real errors.
-    //
-    // Allowlist, not `!== 'tide'`: this bug WAS the registry growing a kind we
-    // didn't anticipate, and a denylist re-acquires it the next time that happens.
-    // Absent kind means current. Matches chs-constituents' overlay filter.
-    .filter(([, e]) => e.provider === 'chs' && e.derived === undefined
-      && (e.kind === undefined || e.kind === 'current'))
+  // Which registry entries are gates we can fetch is `currentGates`' call, not
+  // ours. It excludes tide reference ports — they publish no wcsp1 series, so
+  // resolveLiveIds finds nothing and each threw "no live id for <port>" every
+  // poll cycle on the boat Pi (ten of them, 2026-08-10) — and derived gates like
+  // Malibu, which CHS publishes no current station for at all. Serving derived
+  // slack from a reference tide port is Phase 2; until then, not our data.
+  //
+  // Both exclusions used to live here as a hand-rolled filter, and this repo got
+  // it wrong once already by predating a class the registry grew. The package
+  // that grows the classes now owns the distinction.
+  return [...currentGates({ registry: new Map(Object.entries(data)), provider: 'chs' })]
     .map(([key, e]) => ({
       provider: 'chs' as const,
       stationId: key,
