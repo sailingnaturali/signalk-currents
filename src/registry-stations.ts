@@ -9,7 +9,12 @@ import { StationConfig } from './types';
 export const OPEN_STRAITS = new Set<string>(['Juan de Fuca - East', 'Johnstone Strait - Central']);
 
 interface DerivedBlock { reference: string; hwLagMinutes: number; lwLagMinutes: number; }
-interface RegistryEntry { name: string; position: number[]; provider: string; derived?: DerivedBlock; }
+interface RegistryEntry {
+  name: string; position: number[]; provider: string;
+  // Absent means 'current': the registry was currents-only before it grew tide ports.
+  kind?: 'tide' | 'current';
+  derived?: DerivedBlock;
+}
 type RegistryData = Record<string, RegistryEntry>;
 
 export interface DerivedGateConfig {
@@ -47,7 +52,13 @@ export function registryChsStations(data: RegistryData = registry as RegistryDat
     // chs-constituents to fit — including one just throws "no live id" every
     // cycle. Their slack derives from a reference tide port; serving that is
     // Phase 2 (see station-corrections' `derived` block). Until then, not our data.
-    .filter(([, e]) => e.provider === 'chs' && e.derived === undefined)
+    //
+    // Skip tide reference ports too (station-corrections 2.3.0+ carries them so a
+    // gate can name its companion port). They publish no wcsp1 current series, so
+    // resolveLiveIds finds nothing and every one threw "no live id for <port>" on
+    // every poll cycle — ten of them on the boat Pi, 2026-08-10. Harmless (the
+    // station is dropped) but it burns a fetch attempt and buries real errors.
+    .filter(([, e]) => e.provider === 'chs' && e.derived === undefined && e.kind !== 'tide')
     .map(([key, e]) => ({
       provider: 'chs' as const,
       stationId: key,

@@ -5,6 +5,9 @@ const DATA = {
   'chs-dodd-narrows': { name: 'Dodd Narrows', position: [49.13, -123.81], provider: 'chs' },
   'chs-porlier-pass': { name: 'Porlier Pass', position: [49.01, -123.58], provider: 'chs' },
   'noaa-boundary-pass': { name: 'Boundary Pass', position: [48.69, -123.24], provider: 'noaa' },
+  // A tide reference port. Same provider, same registry — but it publishes no
+  // current series, so it is not a gate.
+  'chs-victoria': { name: 'Victoria', position: [48.424, -123.371], provider: 'chs', kind: 'tide' },
   // A derived gate: CHS publishes no current station, so there's nothing to fetch or fit.
   'chs-malibu-rapids': {
     name: 'Malibu Rapids', position: [50.16, -123.85], provider: 'chs',
@@ -38,6 +41,16 @@ describe('registryChsStations', () => {
     expect(dodd.ebbDir).toBeUndefined();
   });
 
+  // Regression: station-corrections 2.3.0 started carrying tide reference ports
+  // (kind: 'tide') alongside the gates. This filter predates that field, so all ten
+  // were served up as current stations, resolved no live id — they publish no wcsp1
+  // series — and threw "no live id for <port>" on every poll cycle on the boat Pi.
+  // Absent kind means current: the registry was currents-only first.
+  it('skips tide reference ports — they are not current gates', () => {
+    const out = registryChsStations(DATA as never);
+    expect(out.find((s) => s.label === 'Victoria')).toBeUndefined();
+  });
+
   it('flags requiresLive true for every constricted gate; exempts only the open straits', () => {
     const out = registryChsStations(DATA as never);
     const byLabel = Object.fromEntries(out.map((s) => [s.label, s]));
@@ -50,6 +63,9 @@ describe('registryChsStations', () => {
     expect(out.length).toBeGreaterThanOrEqual(19);
     expect(out.find((s) => s.label === 'Dodd Narrows')?.stationId).toBe('chs-dodd-narrows');
     expect(out.find((s) => s.stationId === 'chs-malibu-rapids')).toBeUndefined();
+    // The shape of this bug: the registry grows entries that are not gates.
+    expect(out.filter((s) => s.stationId.startsWith('chs-'))
+      .find((s) => s.label === 'Victoria')).toBeUndefined();
   });
 
   it('exempts the two open straits from requiresLive; a constricted gate stays flagged', () => {
