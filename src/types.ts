@@ -30,6 +30,10 @@ export interface StationConfig {
   // resolveLiveIds). NEVER committed. `stationId` above is the stable identity
   // (registry key for CHS); `liveId` is only the fetch handle.
   liveId?: string;
+  // The registry's aliases for a gate, set by registryChsStations only — other
+  // names the provider may publish the same station under, used solely to
+  // resolve liveId (see liveIdFor). Not operator config; absent from the schema.
+  aliases?: string[];
 }
 
 export interface StationDirs {

@@ -19,6 +19,21 @@ export function normalizeName(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 }
 
+// The registry's name for a gate is not always CHS's name for the station that
+// publishes it: the current file says "Masset Channel" for Masset Sound and "Big
+// Bras D'Or" for Great Bras d'Or. The registry owns the name and carries the
+// provider's as an alias, so try the label first — an alias must never shadow a
+// gate whose own name matched — then the aliases.
+export function liveIdFor(
+  ids: Map<string, string>, label: string, aliases: readonly string[] = [],
+): string | undefined {
+  for (const name of [label, ...aliases]) {
+    const id = ids.get(normalizeName(name));
+    if (id) return id;
+  }
+  return undefined;
+}
+
 export async function resolveLiveIds(fetchFn: typeof fetch = fetch): Promise<Map<string, string>> {
   const resp = await fetchFn(`${IWLS_BASE}/stations`);
   if (!resp.ok) throw new Error(`IWLS ${resp.status}`);

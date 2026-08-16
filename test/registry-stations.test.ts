@@ -3,7 +3,7 @@ import { registryChsStations, registryDerivedGates } from '../src/registry-stati
 
 const DATA = {
   'chs-dodd-narrows': { name: 'Dodd Narrows', position: [49.13, -123.81], provider: 'chs' },
-  'chs-porlier-pass': { name: 'Porlier Pass', position: [49.01, -123.58], provider: 'chs' },
+  'chs-porlier-pass': { name: 'Porlier Pass', position: [49.01, -123.58], provider: 'chs', aliases: ['porlier'] },
   'noaa-boundary-pass': { name: 'Boundary Pass', position: [48.69, -123.24], provider: 'noaa' },
   // A tide reference port. Same provider, same registry — but it publishes no
   // current series, so it is not a gate.
@@ -64,6 +64,21 @@ describe('registryChsStations', () => {
     const byLabel = Object.fromEntries(out.map((s) => [s.label, s]));
     expect(byLabel['Dodd Narrows'].requiresLive).toBe(true);      // constricted
     expect(byLabel['Porlier Pass'].requiresLive).toBe(true);      // constricted (flips under the new posture)
+  });
+
+  // The aliases ride along only so live-id resolution can fall back to the name
+  // CHS's own station file uses (see liveIdFor). They are not operator config.
+  it('carries the registry aliases as fetch-name candidates', () => {
+    const out = registryChsStations(DATA as never);
+    const byLabel = Object.fromEntries(out.map((s) => [s.label, s]));
+    expect(byLabel['Porlier Pass'].aliases).toEqual(['porlier']);
+    expect(byLabel['Dodd Narrows'].aliases).toBeUndefined();
+  });
+
+  it('carries the CHS station names the national gates are published under', () => {
+    const byLabel = Object.fromEntries(registryChsStations().map((s) => [s.label, s]));
+    expect(byLabel['Masset Sound'].aliases).toContain('masset channel');
+    expect(byLabel["Great Bras d'Or"].aliases).toContain("big bras d'or");
   });
 
   it('reads the real bundled registry (guards a silent rename), and skips the derived Malibu gate', async () => {

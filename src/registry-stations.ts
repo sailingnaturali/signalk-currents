@@ -15,6 +15,7 @@ interface RegistryEntry {
   // Absent means 'current': the registry was currents-only before it grew tide ports.
   kind?: 'tide' | 'current';
   derived?: DerivedBlock;
+  aliases?: string[];
 }
 type RegistryData = Record<string, RegistryEntry>;
 
@@ -64,6 +65,9 @@ export function registryChsStations(data: RegistryData = registry as RegistryDat
       label: e.name,
       lat: e.position[0],
       lon: e.position[1],
+      // Carried only so live-id resolution can fall back to the name CHS's own
+      // station file uses — Masset Sound is published as "Masset Channel".
+      aliases: e.aliases,
       requiresLive: OPEN_STRAITS.has(e.name) ? undefined : true,
     }));
 }

@@ -10,7 +10,7 @@ import { loadHarmonicDb, harmonicStationFor, synthesizeHorizon, derivedGateFor, 
 import { selectData } from './select';
 import { computeDiscrepancy, appendDiscrepancy } from './compare';
 import { effectiveStations, registryDerivedGates, DerivedGateConfig } from './registry-stations';
-import { resolveLiveIds, normalizeName } from './sources/iwls-index';
+import { resolveLiveIds, liveIdFor } from './sources/iwls-index';
 import { runBuild, buildStatus } from './build-action';
 
 interface Options {
@@ -76,7 +76,7 @@ export = function (app: ServerAPI): Plugin {
         try {
           const liveIds = await resolveLiveIds();
           for (const s of stations) {
-            if (s.provider === 'chs') s.liveId = liveIds.get(normalizeName(s.label));
+            if (s.provider === 'chs') s.liveId = liveIdFor(liveIds, s.label, s.aliases);
           }
         } catch (e) {
           app.debug(`live CHS id resolution failed (offline?): ${(e as Error).message}`);

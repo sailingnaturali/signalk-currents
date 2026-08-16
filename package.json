@@ -1,6 +1,6 @@
 {
   "name": "@sailingnaturali/signalk-currents",
-  "version": "0.11.2",
+  "version": "0.12.0",
   "description": "Tidal current speed and direction for the vessel's position.",
   "main": "dist/index.js",
   "scripts": {
@@ -50,7 +50,7 @@
     "@neaps/tide-predictor": "^0.10.0",
     "@sailingnaturali/chs-constituents": "^0.2.0",
     "@sailingnaturali/current-stations": "^0.1.0",
-    "@sailingnaturali/station-corrections": "^2.7.1",
+    "@sailingnaturali/station-corrections": "^2.9.0",
     "@signalk/server-api": "^2.0.0",
     "geolib": "^3.3.4"
   },

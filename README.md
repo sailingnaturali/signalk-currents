@@ -50,13 +50,15 @@ Configured from the SignalK server plugin UI.
 
 **Default stations.** The plugin ships only one config default, NOAA Boundary Pass
 — CHS is Crown-copyright data and no CHS station id is committed to this repo. The
-Salish Sea / Desolation Sound CHS gates (Dodd Narrows, Active/Porlier Passages,
-Seymour Narrows, Beazley Passage, Hole in the Wall, Gillard Passage, Dent and Arran
-Rapids, and more) are loaded automatically at runtime from the shared
+CHS gates (Dodd Narrows, Active/Porlier Passages, Seymour Narrows, Beazley
+Passage, Hole in the Wall, Gillard Passage, Dent and Arran Rapids, and beyond the
+Salish Sea, Nakwakto Rapids, Quatsino Narrows, Masset Sound and Great Bras d'Or)
+are loaded automatically at runtime from the shared
 [`@sailingnaturali/station-corrections`](https://github.com/sailingnaturali/station-corrections)
 registry by name; each gate's live CHS station id is resolved from the IWLS
 `/stations` index (under the operator's own CHS licence) only when fetching, never
-persisted. Add entries to `stations` to override a registry gate or add your own
+persisted. Where CHS publishes a station under a different name than the registry
+uses — "Masset Channel" for Masset Sound — the registry's aliases resolve it. Add entries to `stations` to override a registry gate or add your own
 cruising ground. Set directions aren't baked into the defaults — both providers
 publish them (CHS in station metadata, NOAA inline), so every gate gets an
 authoritative `setTrue` fetched at runtime.
