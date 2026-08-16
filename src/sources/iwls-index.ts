@@ -2,6 +2,23 @@
 // commits NO CHS id (licence); the id is fetched live here and used only to pull
 // live data, under the operator's own CHS licence. Mirrors chs-constituents'
 // station listing: GET /stations, keep the ~30 that publish a wcsp1 series.
+//
+// Why name and not position, since the record never said: the licence forces
+// SOME runtime join, not this one. The load-bearing part is the wcsp1 filter —
+// it is what makes either key safe. Names alone are ambiguous without it (CHS
+// publishes both a current station and a tide gauge called "Porlier Pass", and
+// another pair called "Seymour Narrows"); positions alone are worse (the tide
+// station Duffus Point sits at coordinates identical to Big Bras D'Or, so no
+// tolerance separates them). Inside the filtered ~30, either key resolves all
+// 23 registry gates uniquely — measured 2026-08-15: nearest station 170 m at
+// worst, nearest false positive 978 m, so a position match would want a ~500 m
+// tolerance. Name wins on the tiebreak because the registry owns the name and
+// a rename there is meant to carry, while a position is a fact about water that
+// says nothing about which record a reader meant. The cost is provider renames,
+// which liveIdFor covers with the registry's aliases.
+//
+// sibling: slackwater-web/src/chs/resolve.ts joins by position (3 km, series-
+// filtered) for tide ports. Both are correct; the filter is the invariant.
 const IWLS_BASE = 'https://api-iwls.dfo-mpo.gc.ca/api/v1';
 
 export interface IwlsStation { id: string; officialName: string; latitude: number; longitude: number; }
