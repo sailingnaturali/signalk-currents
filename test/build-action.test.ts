@@ -4,7 +4,17 @@ import { join } from 'path';
 import { tmpdir } from 'os';
 import { runBuild, buildStatus } from '../src/build-action';
 
-function flush() { return new Promise((r) => setTimeout(r, 10)); }
+// runBuild is fire-and-forget by design — a real fit runs ~30 minutes — so its
+// only completion signal is buildStatus().running going false, on both the
+// success and the failure path. Poll that. A fixed 10 ms sleep here lost the
+// race on the slowest CI runners (Windows, emulated armv7) and failed two tests
+// that had nothing to do with the commit under them.
+async function settled(timeoutMs = 5000) {
+  const deadline = Date.now() + timeoutMs;
+  while (buildStatus().running && Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 5));
+  }
+}
 
 describe('runBuild', () => {
   it('writes atomically — no .tmp file left behind on success', async () => {
@@ -15,7 +25,7 @@ describe('runBuild', () => {
       onProgress: () => {},
       onDone: () => {},
     });
-    await flush();
+    await settled();
     expect(existsSync(join(dataDir, 'chs-constituents.json'))).toBe(true);
     expect(existsSync(join(dataDir, 'chs-constituents.json.tmp'))).toBe(false);
   });
@@ -30,7 +40,7 @@ describe('runBuild', () => {
       onProgress: () => {},
       onDone,
     });
-    await flush();
+    await settled();
     const written = JSON.parse(readFileSync(join(dataDir, 'chs-constituents.json'), 'utf8'));
     expect(written.note).toContain('NOT FOR NAVIGATION');
     expect(onDone).toHaveBeenCalled();
@@ -45,7 +55,7 @@ describe('runBuild', () => {
       onProgress: () => {},
       onDone: () => {},
     });
-    await flush();
+    await settled();
     expect(existsSync(join(dataDir, 'chs-constituents.json'))).toBe(false);
     expect(buildStatus().error).toMatch(/IWLS unreachable/);
     expect(buildStatus().running).toBe(false);
