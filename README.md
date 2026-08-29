@@ -186,7 +186,7 @@ a season.
 
 An operator with their own CHS licence can build a local harmonic model for the
 CHS gates: SignalK Server → Webapps → this plugin has a **Build offline CHS
-models** button. It runs the [`@sailingnaturali/chs-constituents`](https://github.com/sailingnaturali/chs-constituents)
+models** button. It runs the [`@sailingnaturali/chs-constituents`](https://github.com/openwatersio/chs-constituents)
 pipeline against the live IWLS API (~30 minutes for the full gate list) and writes
 the result to `<SignalK dataDir>/chs-constituents.json`.
 
