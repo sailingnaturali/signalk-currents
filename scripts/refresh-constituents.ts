@@ -1,16 +1,16 @@
 // Regenerates data/harmonic-constituents.json — the offline fallback constituents for
 // the US-Salish stations in the default gate list.
 //
-// Extraction lives in @sailingnaturali/current-stations, shared with the Swift
+// Extraction lives in @openwaters/noaa-current-stations, shared with the Swift
 // engine, so the NOAA traps (harcon is empty at any bin but `currbin`; a reference is
 // (station, bin); a type-S station with its own harcon is harmonic) stay solved in one
-// place. See https://github.com/sailingnaturali/current-stations/blob/main/docs/noaa-api.md
+// place. See https://github.com/openwatersio/noaa-current-stations/blob/main/docs/noaa-api.md
 //
 // NOAA data is public domain; derived predictions are UNOFFICIAL. No CHS data here.
 // Run: npm run refresh:constituents
 import { writeFileSync } from 'fs';
 import { join } from 'path';
-import { extractBundle } from '@sailingnaturali/current-stations';
+import { extractBundle } from '@openwaters/noaa-current-stations';
 
 const STATIONS = [
   'PUG1701', 'PUG1702', 'PUG1616', 'PUG1703',
@@ -52,7 +52,7 @@ async function main() {
 
   const db = {
     generated: new Date().toISOString(),
-    source: 'NOAA CO-OPS mdapi harcon via @sailingnaturali/current-stations '
+    source: 'NOAA CO-OPS mdapi harcon via @openwaters/noaa-current-stations '
       + '(public domain; derived predictions are unofficial)',
     stations,
   };
