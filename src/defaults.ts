@@ -2,7 +2,7 @@ import { StationConfig } from './types';
 
 // The plugin ships NO Canadian (CHS) station data — CHS is copyrighted Crown
 // data whose id and constituents must not be committed (see Phase 3 spec). The
-// CHS gate list is sourced at runtime from @sailingnaturali/station-corrections
+// CHS gate list is sourced at runtime from @openwaters/station-metadata
 // (registry-stations.ts) and live ids are resolved from IWLS by name; offline CHS
 // prediction comes from a bundle the operator builds locally.
 //

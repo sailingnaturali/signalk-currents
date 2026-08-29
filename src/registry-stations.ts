@@ -1,5 +1,5 @@
-import registry from '@sailingnaturali/station-corrections/data/registry.json';
-import { currentGates } from '@sailingnaturali/station-corrections';
+import registry from '@openwaters/station-metadata/data/registry.json';
+import { currentGates } from '@openwaters/station-metadata';
 import { StationConfig } from './types';
 
 // Open-strait stations where the current is advisory (speed-made-good), not a

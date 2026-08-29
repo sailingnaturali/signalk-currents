@@ -10,7 +10,7 @@ currents APIs for a configured list of current stations, and:
   every configured station.
 
 CHS gates are auto-loaded at runtime from the shared
-[`@sailingnaturali/station-corrections`](https://github.com/sailingnaturali/station-corrections)
+[`@openwaters/station-metadata`](https://github.com/openwatersio/station-metadata)
 registry (no CHS ids ship in this repo); NOAA and any custom stations come from
 plugin config.
 
@@ -54,7 +54,7 @@ CHS gates (Dodd Narrows, Active/Porlier Passages, Seymour Narrows, Beazley
 Passage, Hole in the Wall, Gillard Passage, Dent and Arran Rapids, and beyond the
 Salish Sea, Nakwakto Rapids, Quatsino Narrows, Masset Sound and Great Bras d'Or)
 are loaded automatically at runtime from the shared
-[`@sailingnaturali/station-corrections`](https://github.com/sailingnaturali/station-corrections)
+[`@openwaters/station-metadata`](https://github.com/openwatersio/station-metadata)
 registry by name; each gate's live CHS station id is resolved from the IWLS
 `/stations` index (under the operator's own CHS licence) only when fetching, never
 persisted. Where CHS publishes a station under a different name than the registry
@@ -68,7 +68,7 @@ Each entry in `stations`:
 | Field | Type | Description |
 |-------|------|-------------|
 | `provider` | `"chs"` \| `"noaa"` | Prediction source. |
-| `stationId` | string | For CHS, the [`station-corrections`](https://github.com/sailingnaturali/station-corrections) registry key (e.g. `chs-active-pass`) — the live IWLS station id is resolved from that key at runtime, never configured. For NOAA, the NOAA station id (e.g. `PUG1717`). |
+| `stationId` | string | For CHS, the [`station-metadata`](https://github.com/openwatersio/station-metadata) registry key (e.g. `chs-active-pass`) — the live IWLS station id is resolved from that key at runtime, never configured. For NOAA, the NOAA station id (e.g. `PUG1717`). |
 | `noaaBin` | number | NOAA current-station bin (NOAA only). |
 | `label` | string | Human-readable name. |
 | `lat` / `lon` | number | Station position (used for nearest-station selection). |
@@ -78,7 +78,7 @@ Each entry in `stations`:
 ### Example station config
 
 The shipped NOAA default. CHS gates need no config at all — they're loaded
-automatically from the [`station-corrections`](https://github.com/sailingnaturali/station-corrections)
+automatically from the [`station-metadata`](https://github.com/openwatersio/station-metadata)
 registry:
 
 ```json
